@@ -29,6 +29,6 @@ def search_output(config_dict):
 if __name__ == "__main__":
     config = read_config()
     cmd = search_output(config)
+    print("exec:", cmd)
     os.system(cmd)
-    print("exec", cmd)
     
