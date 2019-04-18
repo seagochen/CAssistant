@@ -10,8 +10,6 @@ class ListConvert(object):
 
     def __init__(self, strdict):
         self.strdict = strdict
-        if self._valid() is None:
-            raise CannotParseException('Invalid format')
 
     def _valid(self):
         import re
@@ -23,8 +21,11 @@ class ListConvert(object):
 
 
     def to_list(self):
+        if self._valid() is None:
+            return None
+
         if self.strdict is None or len(self.strdict) <= 0:
-            raise CannotParseException('Invalid string detected')
+            return None
 
         # trim the string first
         self.strdict = self.strdict.replace(" ", "")
