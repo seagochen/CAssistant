@@ -6,6 +6,7 @@ from siki.basics.Exceptions import *
 
 # import standard modules
 import os
+import sys
 
 # import self-defined modules
 from utilities import read_config
@@ -37,10 +38,22 @@ def clean_output(config):
     if output is None:
         raise InvalidParamException('config is invalid')
 
-    # remove output file
-    print("rm : {}".format(output))
-    cmd = "rm {}".format(output)
-    os.system(cmd)
+    # find the file name
+    outputs = clean_filename(output)
+
+    # executing
+    for f in outputs:
+        print("rm : {}".format(f))
+        cmd = "rm {}".format(f)
+        os.system(cmd)
+
+
+def clean_filename(filename):
+    flist = fu.search_files("./", filename)
+    if len(flist) > 0:
+        return flist
+    else:
+        return None
 
 
 if __name__ == "__main__":
@@ -66,8 +79,8 @@ if __name__ == "__main__":
             clean_path(config)
         elif cmd == "gen":
             clean_output(config)
-        else: # default
-            clean_path(config)
-            clean_path(config)
+    else: # default
+        clean_path(config)
+        clean_output(config)
 
     

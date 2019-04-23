@@ -2,27 +2,30 @@
 
 # import self-defined modules
 from convert import ListConvert
-from utilities import read_config
+from utilities import *
 
 # import system standard modules
 import os
-from os import sys
+import sys
 
 
 def search_output(config_dict):
-    o_temp = config_dict['temp']['tmp_path']
-    o_type = config_dict['gen']['type']
-    o_output = config_dict['gen']['output']
-    o_compiler = config_dict['gen']['compiler']
+    tempdir = config_dict['temp']['tmp_path']
+    outtype = config_dict['gen']['type']
+    outname = config_dict['gen']['output']
+    compiler = config_dict['gen']['compiler']
 
-    if o_type == 'static':
-        return "ar -rcs {} {}/*.o".format(o_output, o_temp)
+    if outtype == 'static':
+        return "ar -rcs {}.a {}/*.o".format(outname, tempdir)
 
-    if o_type == 'share':
-        return "{} -shared -fPIC {}/*.o -o lib{}".format(o_compiler, o_temp, o_output)
+    if outtype == 'share':
+        return "{} -shared -fPIC {}/*.o -o lib{}.so".format(compiler, tempdir, outname)
 
-    if o_type == 'exe':
-        return "{} {}/*.o -o {}".format(o_compiler, o_temp, o_temp)
+    if outtype == 'exe':
+        gendict = config_dict['gen']
+        additions = [search_flag(gendict), search_includes(gendict), search_libraries(gendict)]
+        additions = " ".join(additions)
+        return "{} {} {}/*.o -o {}.exe".format(compiler, additions, tempdir, outname)
 
 
 if __name__ == "__main__":
