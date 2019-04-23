@@ -33,16 +33,11 @@ def clean_output(config):
     if config is None:
         raise InvalidParamException('config is invalid')
 
-    output = config["gen"]["output"]
-
-    if output is None:
-        raise InvalidParamException('config is invalid')
-
     # find the file name
-    outputs = search_output(output)
+    outputs = search_output(config)
 
-    # executing
-    if outputs is None:
+    # # executing
+    if outputs is None or len(outputs) <= 0:
         return
 
     for f in outputs:
@@ -51,12 +46,24 @@ def clean_output(config):
         os.system(cmd)
 
 
-def search_output(filename):
-    flist = fu.search_files("./", filename)
-    if len(flist) > 0:
-        return flist
-    else:
-        return None
+def search_output(config):
+    otype = config["gen"]["type"]
+    fname = config["gen"]["output"]
+    flist = None
+
+    if otype == "exe":
+        flist = fu.search_files("./", "{}\\.exe$".format(fname))
+        # print(flist)
+    elif otype == "share":
+        flist = fu.search_files("./", "{}\\.so$".format(fname))
+        # print(flist)
+    elif otype == "static":
+        flist = fu.search_files("./", "{}\\.a$".format(fname))
+        # print(flist) 
+
+    return flist      
+
+
 
 
 if __name__ == "__main__":
