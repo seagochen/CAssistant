@@ -1,13 +1,12 @@
 #!/bin/env python3
 
+# import self-defined modules
 from convert import ListConvert
-import os
+from utilities import read_config
 
-def read_config(config_file="./Tora/project.conf"):
-    import configparser
-    config = configparser.RawConfigParser()
-    config.read(config_file)
-    return config
+# import system standard modules
+import os
+from os import sys
 
 
 def search_output(config_dict):
@@ -27,7 +26,18 @@ def search_output(config_dict):
 
 
 if __name__ == "__main__":
-    config = read_config()
+    """
+    usage: python3 cleanpro.py path_of_config_file command
+    """
+
+    # if script with arguments
+    config = None
+    if len(sys.argv) >= 2:
+        config = read_config(sys.argv[1])
+    else:
+        config = read_config()
+    
+    # executing
     cmd = search_output(config)
     print("exec:", cmd)
     os.system(cmd)

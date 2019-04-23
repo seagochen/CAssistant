@@ -1,12 +1,16 @@
 #!/bin/env python3
 
-# a tool can convert a string with the format "['a', 'b', 'c']" to a
-# list object in python
+
 
 import re
 from siki.basics.Exceptions import CannotParseException
 
 class ListConvert(object):
+    """
+    This module can convert a string with the format 
+    ['a', 'b', 'c'] or ["a", "b", "c"] to a list object 
+    of python
+    """
 
     def __init__(self, strdict):
         self.strdict = strdict

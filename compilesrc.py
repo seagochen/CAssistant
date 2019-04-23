@@ -1,16 +1,16 @@
 #!/bin/env python3
 
+# import siki
 from siki.basics import FileUtils as fu
+from siki.basics.Exceptions import *
 
+# import standard modules
 import os
+from os import sys
 
+# import self-defined modules
 from convert import ListConvert
-
-def read_config(config_file="./Tora/project.conf"):
-    import configparser
-    config = configparser.RawConfigParser()
-    config.read(config_file)
-    return config
+from utilities import read_config
 
 
 def compile_src_to_temp(config_dict):
@@ -100,5 +100,16 @@ def _gen_tmp_file(config_dict, srcfile):
     
 
 if __name__ == "__main__":
-    config = read_config()
+    """
+    usage: python3 cleanpro.py path_of_config_file command
+    """
+
+    # if script with arguments
+    config = None
+    if len(sys.argv) >= 2:
+        config = read_config(sys.argv[1])
+    else:
+        config = read_config()
+
+    # executing
     compile_src_to_temp(config)
