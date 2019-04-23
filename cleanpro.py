@@ -39,16 +39,19 @@ def clean_output(config):
         raise InvalidParamException('config is invalid')
 
     # find the file name
-    outputs = clean_filename(output)
+    outputs = search_output(output)
 
     # executing
+    if outputs is None:
+        return
+
     for f in outputs:
         print("rm : {}".format(f))
         cmd = "rm {}".format(f)
         os.system(cmd)
 
 
-def clean_filename(filename):
+def search_output(filename):
     flist = fu.search_files("./", filename)
     if len(flist) > 0:
         return flist

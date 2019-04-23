@@ -18,15 +18,20 @@ def compile_src_to_temp(config_dict):
     if len(config_src) <= 0:
         raise InvalidParamException('config is invalid')
     
-    flists = fu.search_files(config_src['src_path'], r"\.(c|cpp|cuda)$")
-    for f in flists:
-        root, leaf = fu.root_leaf(f)
-        cmdls = [config_src['compiler'], search_flag(config_src),
-        search_includes(config_src), f, search_libraries(config_src), "-c -o", _gen_tmp_file(config_dict, leaf)]
-        cmd = " ".join(cmdls)
-        # debug
-        print("exec:", cmd)
-        os.system(cmd)
+    # convert src path to list
+    pathes = ListConvert(config_src['src_path']).to_list()
+
+    # iterate every path
+    for path in pathes:
+        flists = fu.search_files(path[1:-1], r"\.(c|cpp|cuda)$")
+        for f in flists:
+            root, leaf = fu.root_leaf(f)
+            cmdls = [config_src['compiler'], search_flag(config_src),
+            search_includes(config_src), f, search_libraries(config_src), "-c -o", _gen_tmp_file(config_dict, leaf)]
+            cmd = " ".join(cmdls)
+            # debug
+            print("exec:", cmd)
+            os.system(cmd)
 
 
 def _gen_tmp_file(config_dict, srcfile):
