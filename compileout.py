@@ -8,7 +8,6 @@ from utilities import *
 import os
 import sys
 
-
 def search_output(config_dict):
     tempdir = config_dict['temp']['tmp_path']
     outtype = config_dict['gen']['type']
@@ -23,9 +22,9 @@ def search_output(config_dict):
 
     if outtype == 'exe':
         gendict = config_dict['gen']
-        additions = [search_flag(gendict), search_includes(gendict), search_libraries(gendict)]
+        additions = [search_flag(gendict), search_libraries(gendict), search_files(gendict)]
         additions = " ".join(additions)
-        return "{} {} {}/*.o -o {}.exe".format(compiler, additions, tempdir, outname)
+        return "{} {}/*.o {} -o {}.exe".format(compiler, tempdir, additions, outname)
 
 
 if __name__ == "__main__":

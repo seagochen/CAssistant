@@ -60,3 +60,20 @@ def search_libraries(config_dict):
     for t in tokens:
         line += "-l{} ".format(t[1:-1])
     return line
+
+
+def search_files(config_dic):
+    individuals = config_dic['files']
+    if individuals is None or len(individuals) <= 0:
+        return ""
+    
+    # generate includes
+    tokens = ListConvert(individuals).to_list()
+    if tokens is None:
+        return ""
+
+    # generate tokens
+    line = ""
+    for t in tokens:
+        line += "{} ".format(t[1:-1])
+    return line
