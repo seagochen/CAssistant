@@ -45,9 +45,13 @@ def move_gen(filename, projdir):
     
     # move the output file to the folder
     output = fu.gen_filepath(projdir, filename)
+    
+    # check if file exists, remove it first
     if fu.exists(output):
         fu.rmfile(output)
-        fu.move(filename, projdir)
+    
+    # just move generated file to the folder
+    fu.move(filename, projdir)
 
 
 def gen_final(config_dict):
@@ -60,7 +64,7 @@ def gen_final(config_dict):
     
     # check dir is exits
     if not os.path.isdir(projdir):
-        mkdir(projdir)
+        fu.mkdir(projdir)
     
     # change the output file extension
     if outtype == "static":

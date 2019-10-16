@@ -55,18 +55,31 @@ class TreeNode(object):
         return obj
 
 
-def explore_dir_struct(path):
-    print(path)
-    pass
+def explore_header_files_if_necessary(path):
+    from convert import ListConvert
+    
+    # header-related dirs
+    tokens = ListConvert(path).to_list()
+    for i in range(len(tokens)):
+        tokens[i] = tokens[i][1:-1]
+
+    # list out all header files under the given folder
+    f_output = []
+    for fdir in tokens:
+        out = search_files(fdir, r"\.[h|hpp|H|Hpp|HPP]")
+        if len(out) > 0: # find out something
+            f_output.extend(out)
+    
+    # print out for debug
+    #print(f_output)
+
+    # generate file tree
+
 
 
 def copy_headers(config):
     # the includes list from config
-    #includes = search_includes(config['src'])
     header_dirs = config['src']['includes']
 
-    print(header_dirs, type(header_dirs))
-
-    # iterate dir struct
-    #for dir in includes:
-    #    inc_dir = explore_dir_struct(dir)
+    # iterate directory and list all header files
+    explore_header_files_if_necessary(header_dirs)
