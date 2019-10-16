@@ -1,8 +1,12 @@
 #!/bin/env python3
+"""
+convert the original file format to python code format
+"""
 
-
-
+# import standard
 import re
+
+# import siki
 from siki.basics.Exceptions import CannotParseException
 
 class ListConvert(object):

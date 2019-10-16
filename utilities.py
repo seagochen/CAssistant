@@ -29,6 +29,10 @@ def search_flag(config_dict):
 
 
 def search_includes(config_dict):
+    """
+    search the config file, and generate include flag, if necessary
+    e.g. -I./boost
+    """
     config_includes = config_dict['includes']
     if config_includes is None or len(config_includes) <= 0:
         return ""

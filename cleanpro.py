@@ -11,7 +11,7 @@ import sys
 # import self-defined modules
 from utilities import read_config
 
-def clean_path(config):
+def clean_temp_files(config):
     if config is None:
         raise InvalidParamException('config is invalid')
     
@@ -28,8 +28,12 @@ def clean_path(config):
         print("rm: {}".format(f))
         fu.rmfile(f)
 
+    # remove filetering database
+    if fu.exists(config['conf']['toradb']):
+        fu.rmfile(config['conf']['toradb'])
 
-def clean_output(config):
+
+def clean_gen_file(config):
     if config is None:
         raise InvalidParamException('config is invalid')
 
@@ -41,7 +45,6 @@ def clean_output(config):
         return
 
     for f in outputs:
-        print("rm : {}".format(f))
         cmd = "rm {}".format(f)
         os.system(cmd)
 
@@ -86,11 +89,11 @@ if __name__ == "__main__":
         cmd = sys.argv[2]
 
         if cmd == "temp":
-            clean_path(config)
+            clean_temp_files(config)
         elif cmd == "gen":
-            clean_output(config)
+            clean_gen_file(config)
     else: # default
-        clean_path(config)
-        clean_output(config)
+        clean_temp_files(config)
+        clean_gen_file(config)
 
     
