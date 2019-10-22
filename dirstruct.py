@@ -4,7 +4,19 @@ It will try to create a file structure consistent with the source code structure
 """
 
 from utilities import search_includes
-from siki.basics.FileUtils import mkdir, search_folders, search_files
+#from siki.basics.FileUtils import mkdir, search_folders, search_files
+from siki.basics import FileUtils as fu
+
+class FileNode(object):
+    """
+    directory tree node
+    """
+
+    def __init__(self, filepath):
+        # obtains root and leaf
+        root, leaf = fu.root_leaf(filepath)
+        self.root = root
+        self.leaf = leaf
 
 class TreeNode(object):
     """The basic node of tree structure"""
@@ -66,10 +78,12 @@ def explore_header_files_if_necessary(path):
     # list out all header files under the given folder
     f_output = []
     for fdir in tokens:
-        out = search_files(fdir, r"\.[h|hpp|H|Hpp|HPP]")
+        out = fu.search_files(fdir, r"\.[h|hpp|H|Hpp|HPP]")
         if len(out) > 0: # find out something
             f_output.extend(out)
-    
+            for f in out:
+                node = FileNode(f)
+                print(node.root, "/", node.leaf)
     # print out for debug
     #print(f_output)
 
