@@ -4,8 +4,6 @@ from siki.basics import SystemUtils as su
 
 # dictionary type extensions
 from siki.dstruct import DictExtern
-from lib2to3.pytree import Leaf
-
 
 class FileTreeNode(object):
     """
@@ -187,6 +185,42 @@ class FileTreeNode(object):
                     treeToMerge = subtree
                     ourSubTree = ourTree.search_subnode(subtree.name)
                     ourSubTree.merge_subtree(treeToMerge, ourSubTree)
+                    
+                    
+    def generate_path(self):
+        """
+        re-generate file path
+        """
+        path = ""
+        sep = ""
+        
+        # determine the separator
+        if su.is_windows():
+            sep = "\\"
+        else: # Linux and MacOS shares the same separator
+            sep = "/"
+            
+        # step by step, and back to the upper node to generate the file path
+        # path could be absolute path and relative path
+        root = self
+        
+        while root is not None:
+            path = sep + root.name + path
+            root = root.root
+        
+        if su.is_windows():
+            path = path.replace("\\.\\", ".\\")
+            path = path.replace("\\\\", "\\")
+            path = path.replace("\\..\\", "..\\")
+        else:
+            path = path.replace("/./", "./")
+            path = path.replace("//", "/")
+            path = path.replace("/../", "../")
+        # final
+        #path = self.root.name + path
+        
+        # return to caller
+        return path
         
     
     
@@ -261,58 +295,69 @@ def convert_file_path(filepath):
 
 
 
-def convert_fplist_to_tree(fplist, treenode):
+def merge_fplist_to_tree(fplist, filetree):
     """
     convert file path to tree node
     """
     if len(fplist) <= 0:
         pass # do nothing
     
+    tree = None
+    for token in fplist:
+        node = FileTreeNode(token)
+        
+        if tree is not None:
+            tree.append_node(node)
+        
+        tree = node
     
+    # now traversal back to the top
+    while tree.root is not None:
+        tree = tree.root
     
+    # append the subtree to file tree
+    if filetree is not None and type(filetree) is FileTreeNode:
+        filetree.merge_subtree(tree)
+    else: # failed
+        print("file tree to merge is none, or invalid type")
+        
+
+
+def generate_file_tree(path, pattern="*"):
+    """
+    generate a file tree
+    @param path: folder path
+    @param pattern: search pattern, default is *
+    """
+    
+    # search files
+    files = fu.search_files(path, pattern)
+    
+    if len(files) <= 0:
+        print("no file found")
+        pass
+    
+    # convert the path to fplist
+    rootName = convert_file_path(path)[0]
+    
+    # generate a file tree
+    tree = FileTreeNode(rootName)
+    
+    for f in files:
+        merge_fplist_to_tree(convert_file_path(f), tree)
+        
+    # return to caller
+    return tree
 
     
 
 if __name__ == "__main__":
-#    for f in fu.search_files("."):
-#        print(convert_file_path(f))
+    import sys
+    
+    tree = generate_file_tree(sys.argv[1], sys.argv[2])
+    tree.print_leaves()
 
-    root = FileTreeNode("root")
-    leaf1 = FileTreeNode("leaf1")
-    leaf2 = FileTreeNode("leaf2")
-    leaf3 = FileTreeNode("leaf3")
-
-    root.append_node(leaf1)
-    root.append_node(leaf2)
-    root.append_node(leaf3)
-    
-    L1_leaf1 = FileTreeNode("L1-leaf1")
-    L1_leaf2 = FileTreeNode("L1-leaf2")
-    L1_leaf3 = FileTreeNode("L1-leaf3")
-    
-    leaf1.append_node(L1_leaf1)
-    leaf1.append_node(L1_leaf2)
-    leaf2.append_node(L1_leaf3)
-    
-    L2_leaf1 = FileTreeNode("L2-leaf1")
-    
-    L1_leaf3.append_node(L2_leaf1)
-
-    root.print_leaves()
-        
-    print("------------------")
-    
-    tree = FileTreeNode("root")
-    sleaf1 = FileTreeNode("leaf1")
-    sleaf2 = FileTreeNode("leaf4")
-    tree.append_node(sleaf1)
-    tree.append_node(sleaf2)
-    
-    sL1_leaf1 = FileTreeNode("L1-leaf4")
-    sleaf1.append_node(sL1_leaf1)
-    
-    root.merge_subtree(tree)
-    
-    root.print_leaves()
+    node = tree.leaves[0].leaves[0]
+    print(node.generate_path())
     
     
