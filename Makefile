@@ -9,4 +9,4 @@ clean:
 	@python3 Tora/cleanpro.py project.conf
 
 zip:
-	@zip zipfile triangle.zip Triangle/*
+	@zip zipfile project.zip ./*
