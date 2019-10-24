@@ -16,8 +16,6 @@ import ntpath
 
 def create_folder_and_copy_if_necessary(old_path, new_path):
 
-    print("copy {} to {}".format(old_path, new_path))
-
     if fu.exists(new_path): # compute hash code
         hash_new = hcode.compute_file_md5(new_path)
         hash_old = hcode.compute_file_md5(old_path)
@@ -31,6 +29,7 @@ def create_folder_and_copy_if_necessary(old_path, new_path):
         fu.mkdir(head)
 
     # copy file if not exists or out of date
+    print("copy {} to {}".format(old_path, new_path))
     fu.copy(old_path, new_path)
 
 
