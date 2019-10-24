@@ -16,6 +16,8 @@ import ntpath
 
 def create_folder_and_copy_if_necessary(old_path, new_path):
 
+    print("copy {} to {}".format(old_path, new_path))
+
     if fu.exists(new_path): # compute hash code
         hash_new = hcode.compute_file_md5(new_path)
         hash_old = hcode.compute_file_md5(old_path)
@@ -54,17 +56,21 @@ def copy_headers_if_necessary(header_dirs, output_dir):
         if len(tree.only_files()) > 0:
             current_headers_dir.append_node(tree)
 
+    # list all headers from tree
+    origin_files_list = current_headers_dir.only_files()
+    
     # create a copy
     output_headers_dir = ftree.copy_tree(current_headers_dir)
+    target_nodes_list = output_headers_dir.only_files(True)
 
     # change the output dir to target
     output_headers_dir.name = output_dir
-        
-    # copy files
-    origin_files_list = current_headers_dir.only_files()
-    target_files_list = ftree.generate_list(output_headers_dir)
 
-    # copying files
+    target_files_list = []
+    for node in target_nodes_list:
+        target_files_list.append(node.generate_path())
+
+    # copy files
     if len(origin_files_list) == len(target_files_list):    
         for i in range(len(target_files_list)):
             create_folder_and_copy_if_necessary(origin_files_list[i],
