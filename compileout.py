@@ -25,7 +25,7 @@ def search_output(config_dict):
     compiler = config_dict['gen']['compiler']
 
     if outtype == 'static':
-        return "ar -rcs {}.a {}/*.o".format(outname, tempdir)
+        return "ar -rcs lib{}.a {}/*.o".format(outname, tempdir)
 
     if outtype == 'share':
         return "{} -shared -fPIC {}/*.o -o lib{}.so".format(compiler, tempdir, outname)
