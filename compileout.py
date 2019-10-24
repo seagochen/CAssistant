@@ -68,18 +68,22 @@ def gen_final(config_dict):
     
     # change the output file extension
     if outtype == "static":
-        outname = "{}.a".format(outname)
+        outname = "lib{}.a".format(outname)
     elif outtype == "share":
-        outname = "{}.so".format(outname)
+        outname = "lib{}.so".format(outname)
     elif outtype == "exe":
         outname = "{}.exe".format(outname)
     
     # move the generated file to folder
+    print("move file {} to dir {}".format(outname, projdir))
     move_gen(outname, projdir)
 
     # if generated is library, still need to copy its
     # header files and its dir to output dir
     copy_headers(config_dict)
+
+    # debug message
+    print("done!")
 
 
 if __name__ == "__main__":

@@ -80,6 +80,7 @@ def copy_headers(config):
     if output_type == "exe": # just output the executable file
         pass
 
+    print("Tora is trying to copy a backup of headers to the same folder")
     # else, iterate directory and list all header files
     # and copy them to the output dir
     copy_headers_if_necessary(header_dirs, output_dir)
