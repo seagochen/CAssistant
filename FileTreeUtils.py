@@ -20,7 +20,7 @@ def _convert_path(path):
 
 def _merge_to_tree(f_tokens, main_tree):
     if len(f_tokens) <= 0:
-        pass # do nothing
+        return None # do nothing
 
     tree = None
     for token in f_tokens:
@@ -56,7 +56,7 @@ def traversal_dir(path, pattern="*"):
     files = fu.search_files(path, pattern)
 
     if len(files) <= 0:
-        pass
+        return None # do nothing
 
     # file tree
     tree = FileNodeTree(_convert_path(path)[0])

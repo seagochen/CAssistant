@@ -200,7 +200,7 @@ class FileNodeTree(object):
         if ourTree.name != treeToMerge.name:
             if treeToMerge.name not in ourLeavesNames:
                 ourTree.append_node(treeToMerge) # append tree to our tree
-                pass
+                return ourTree
                 
         for subtree in treeToMerge.leaves:
             if subtree.name not in ourLeavesNames:
@@ -210,6 +210,8 @@ class FileNodeTree(object):
                 ourSubTree = ourTree.search_subnode(subtree.name)
                 if ourSubTree is not None:
                     ourSubTree.merge_subtree(treeToMerge, ourSubTree)
+
+        return ourTree
                     
                     
     def generate_path(self):

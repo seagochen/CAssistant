@@ -23,7 +23,7 @@ def create_folder_and_copy_if_necessary(old_path, new_path):
         hash_old = hcode.compute_file_md5(old_path)
 
         if hash_old == hash_new: # same file
-            pass # do nothing
+            return None # do nothing
 
     # mkdir if not exists
     head, tail = ntpath.split(new_path)
@@ -84,7 +84,7 @@ def copy_headers(config):
     output_type = config['gen']['type']
 
     if output_type == "exe": # just output the executable file
-        pass
+        return None
 
     print("Tora is trying to copy a backup of headers to the same folder")
     # else, iterate directory and list all header files
