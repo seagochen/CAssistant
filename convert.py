@@ -1,6 +1,8 @@
 #!/bin/env python3
 """
-convert the original file format to python code format
+This file provides a class which could convert a string with
+the format ['a', 'b', 'c'] or ["a", "b", "c"] to a list object 
+of python
 """
 
 # import standard

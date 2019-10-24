@@ -1,11 +1,14 @@
+#!/bin/env python3
+"""
+It will try to create a file structure consistent 
+with the source code structure to hold the required header files
+"""
+
 from siki.basics import FileUtils as fu
 from siki.basics import Exceptions as exceptions
 from siki.basics import SystemUtils as su
 
-# dictionary type extensions
-from siki.dstruct import DictExtern
-
-class FileTreeNode(object):
+class FileNodeTree(object):
     """
     Create a file structure tree and hold the file pathes
     """
@@ -15,16 +18,16 @@ class FileTreeNode(object):
         if root is None:
             root = self
         
-        if root is not None and type(root) is not FileTreeNode:
+        if root is not None and type(root) is not FileNodeTree:
             raise exceptions.NullPointerException("root is invalid data type")
         
         if name is None or type(name) is not str:
             raise exceptions.NullPointerException("name cannot be null or invalid data type")
         
         # assign root and leaves to node   
-        self.root = None # FileTreeNode type
+        self.root = None # FileNodeTree type
         self.name = name # string type
-        self.leaves = [] # list of FileTreeNode
+        self.leaves = [] # list of FileNodeTree
         
         if leaves is not None and len(leaves) > 0:
             for leaf in leaves:
@@ -34,9 +37,9 @@ class FileTreeNode(object):
     def append_node(self, leaf):
         """
         append leaf to root node
-        @param leaf: type of FileTreeNode
+        @param leaf: type of FileNodeTree
         """
-        if leaf is None or type(leaf) is not FileTreeNode:
+        if leaf is None or type(leaf) is not FileNodeTree:
             raise exceptions.InvalidParamException("leaf cannot be null or invalid data type")
         
         # indicate the leaf root to the current root
@@ -168,22 +171,15 @@ class FileTreeNode(object):
         if ourTree.name != treeToMerge.name:
             if treeToMerge.name not in ourLeavesNames:
                 ourTree.append_node(treeToMerge) # append tree to our tree
+                pass
                 
+        for subtree in treeToMerge.leaves:
+            if subtree.name not in ourLeavesNames:
+                ourTree.append_node(subtree)
             else:
-                for subtree in treeToMerge.leaves:
-                    if subtree.name not in ourLeavesNames:
-                        ourTree.append_node(subtree)
-                    else:
-                        treeToMerge = subtree
-                        ourSubTree = ourTree.search_subnode(subtree.name)
-                        ourSubTree.merge_subtree(treeToMerge, ourSubTree)
-        else:
-            for subtree in treeToMerge.leaves:
-                if subtree.name not in ourLeavesNames:
-                    ourTree.append_node(subtree)
-                else:
-                    treeToMerge = subtree
-                    ourSubTree = ourTree.search_subnode(subtree.name)
+                treeToMerge = subtree
+                ourSubTree = ourTree.search_subnode(subtree.name)
+                if ourSubTree is not None:
                     ourSubTree.merge_subtree(treeToMerge, ourSubTree)
                     
                     
@@ -207,22 +203,64 @@ class FileTreeNode(object):
         while root is not None:
             path = sep + root.name + path
             root = root.root
-        
-        if su.is_windows():
-            path = path.replace("\\.\\", ".\\")
-            path = path.replace("\\\\", "\\")
-            path = path.replace("\\..\\", "..\\")
-        else:
-            path = path.replace("/./", "./")
-            path = path.replace("//", "/")
-            path = path.replace("/../", "../")
-        # final
-        #path = self.root.name + path
+
+        # delete the first separator
+        path = path[1:]
         
         # return to caller
         return path
+
+
+    def only_files(self, root=None):
+        """
+        traversal and generate a list with files only    
+        """
+        flist = []
+        if root is None:
+            root = self
         
+        if len(root.leaves) > 0:
+            for node in root.leaves:
+                path = node.generate_path()
+                if fu.isfile(path):
+                    flist.append(path)
+                else:
+                    sub_flist = node.only_files(node)
+                    if len(sub_flist) > 0:
+                        flist.extend(sub_flist)
+        else:
+            path = self.generate_path()
+            if fu.isfile(path):
+                flist.append(path)
+
+        return flist
+
     
+    def only_dirs(self, root=None):
+        """
+        traversal and generate a list with dirs only
+        """
+        dlist = []
+        if root is None:
+            root = self
+        
+        if len(root.leaves) > 0:
+            for node in root.leaves:
+                path = node.generate_path()
+                if fu.isdir(path):
+                    dlist.append(path)
+                    if len(node.leaves) > 0:
+                        sub_dlist = node.only_dirs(node)
+                        if len(sub_dlist) > 0:
+                            dlist.extend(sub_dlist)
+        else:
+            path = self.generate_path()
+            if fu.isdir(path):
+                dlist.append(path)
+
+        return dlist
+
+
     
     def leaves_count(self):
         """
@@ -277,87 +315,3 @@ class FileTreeNode(object):
             for leaf in self.leaves:
                 leaves_name_list.append(leaf.name)
         return ", ".join(leaves_name_list)
-
-
-
-def convert_file_path(filepath):
-    """
-    convert file path into a list format
-    returning something looks like [root, dir, file]
-    """
-    if not fu.exists(filepath):
-        raise exceptions.InvalidParamException("file path is not valid")
-
-    if su.is_windows():
-        return filepath.split('\\')
-    else:
-        return filepath.split('/')
-
-
-
-def merge_fplist_to_tree(fplist, filetree):
-    """
-    convert file path to tree node
-    """
-    if len(fplist) <= 0:
-        pass # do nothing
-    
-    tree = None
-    for token in fplist:
-        node = FileTreeNode(token)
-        
-        if tree is not None:
-            tree.append_node(node)
-        
-        tree = node
-    
-    # now traversal back to the top
-    while tree.root is not None:
-        tree = tree.root
-    
-    # append the subtree to file tree
-    if filetree is not None and type(filetree) is FileTreeNode:
-        filetree.merge_subtree(tree)
-    else: # failed
-        print("file tree to merge is none, or invalid type")
-        
-
-
-def generate_file_tree(path, pattern="*"):
-    """
-    generate a file tree
-    @param path: folder path
-    @param pattern: search pattern, default is *
-    """
-    
-    # search files
-    files = fu.search_files(path, pattern)
-    
-    if len(files) <= 0:
-        print("no file found")
-        pass
-    
-    # convert the path to fplist
-    rootName = convert_file_path(path)[0]
-    
-    # generate a file tree
-    tree = FileTreeNode(rootName)
-    
-    for f in files:
-        merge_fplist_to_tree(convert_file_path(f), tree)
-        
-    # return to caller
-    return tree
-
-    
-
-if __name__ == "__main__":
-    import sys
-    
-    tree = generate_file_tree(sys.argv[1], sys.argv[2])
-    tree.print_leaves()
-
-    node = tree.leaves[0].leaves[0]
-    print(node.generate_path())
-    
-    

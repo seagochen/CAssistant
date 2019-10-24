@@ -1,4 +1,7 @@
 #!/bin/env python3
+"""
+This file provides Tora clean methods
+"""
 
 # import siki
 from siki.basics import FileUtils as fu
@@ -45,8 +48,8 @@ def clean_gen_file(config):
         return
 
     for f in outputs:
-        cmd = "rm {}".format(f)
-        os.system(cmd)
+        print("rm {}".format(f))
+        fu.rmfile(f)
 
 
 def search_output(config):

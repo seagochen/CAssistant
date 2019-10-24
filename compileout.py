@@ -6,7 +6,7 @@ This file is trying to compile the obj-file to final code
 # import self-defined modules
 from convert import ListConvert
 from utilities import *
-from dirstruct import copy_headers
+from CopyHeaders import copy_headers
 
 # import siki
 from siki.basics import FileUtils as fu
