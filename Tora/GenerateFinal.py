@@ -16,16 +16,20 @@ TORA_TEMP=".tora/temp"
 
 def generate_final(reader, path=TORA_TEMP):
     if reader.gen_type() == 'static':
-        cmd = "ar -rcs {} {}/*.o".format(
+        cmd = "ar -rcs {} {} {} {}/*.o".format(
             reader.gen_name(),
+            reader.dir_libs(),
+            reader.file_libs(),
             path
         )
         print("exec:", cmd)
         os.system(cmd)
     
     if reader.gen_type() == 'share':
-        cmd = "{} -shared -fPIC {}/*.o -o {}".format(
+        cmd = "{} -shared -fPIC {} {} {} {}/*.o -o {}".format(
             reader.compiler(),
+            reader.dir_libs(),
+            reader.file_libs(),
             path,
             reader.gen_name()
         )
@@ -33,14 +37,14 @@ def generate_final(reader, path=TORA_TEMP):
         os.system(cmd)
     
     if reader.gen_type() == 'exe':
-        cmd = "{} {} {} {} {} {}/*.o -o {}".format(
+        cmd = "{} {} -o {} {}/*.o {} {} {} ".format(
             reader.compiler(),
             reader.gen_flags(),
+            reader.gen_name(),
+            path,
             reader.sys_libs(),
             reader.dir_libs(),
-            reader.file_libs(),
-            path,
-            reader.gen_name()
+            reader.file_libs()
         )
         print("exec:", cmd)
         os.system(cmd)

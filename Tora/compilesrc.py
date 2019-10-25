@@ -78,6 +78,7 @@ def compiling_internal_files(reader, path=TORA_TEMP):
             reader.includes(),
             reader.src_flags(),
             reader.src_macros(),
+            reader.sys_libs(),
             src,
             "-c -o",
             _object_name(src)]
