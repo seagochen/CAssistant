@@ -7,4 +7,5 @@ clean:
 	@python3 Tora/Clean.py project.conf
 
 zip:
+	@make clean
 	@zip zipfile project.zip ./*

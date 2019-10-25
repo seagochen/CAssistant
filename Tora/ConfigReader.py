@@ -108,16 +108,24 @@ class ConfigReader(object):
         
         return " ".join(temp)
 
-    
-    def includes(self):
+
+    def include_list(self):
         inc_headers = ListConvert(self.config['conf']['includes']).to_list()
 
         if inc_headers is None or len(inc_headers) <= 0:
-            return ""
-        
-        line = ""
+            return []
+
+        flist = []
         for token in inc_headers:
-            line += "-I{} ".format(token[1:-1])
+            flist.append(token[1:-1])
+
+        return flist    
+
+    
+    def includes(self):
+        line = ""
+        for token in self.include_list():
+            line += "-I{} ".format(token)
         
         return line
 
