@@ -88,12 +88,6 @@ def generate_list(tree):
     return pathes
 
 
-def filtering_tree(tree, pattern="*"):
-    import re
-
-
-
-
 def copy_tree(tree):
 
     # create a main node with the same name of tree
@@ -114,12 +108,14 @@ if __name__ == "__main__":
     tree = None
 
     if su.is_windows():
-        tree = traversal_dir(r"D:\Repository\Siki", r"\.py$")
+        tree = traversal_dir(".")
     else:
-        tree = traversal_dir("/mnt/d/Repository/Siki", r"\.py$")
+        tree = traversal_dir(".")
+    
+    tree.delete_subtree(".tora")
+    tree.delete_subtree("output")
+    tree.delete_subtree(".git")
 
     files = tree.only_files()
     for f in files:
         print(f)
-    
-

@@ -5,110 +5,96 @@ This file is trying to compile the given source file to obj-file
 
 # import siki
 from siki.basics import FileUtils as fu
-from siki.basics.Exceptions import *
+from siki.basics import Exceptions as excepts
 
 # import standard modules
 import os
 import sys
 
-# import self-defined modules
-from convert import ListConvert
-from utilities import *
-from filesql import *
+# import Tora modules
+from ConfigReader import ConfigReader
+import ToraDB as toradb
+
+TORA_TEMP=".tora/temp"
 
 
-def compile_src_to_temp(config_dict, db):
-    """
-    use compiler to compile source file to object file
-    """
-    config_src = config_dict['src']
-    if len(config_src) <= 0:
-        raise InvalidParamException('config is invalid')
-    
-    # convert src path to list
-    pathes = ListConvert(config_src['src_path']).to_list()
-
-    # iterate every path
-    for path in pathes:
-        
-        # search and generate a file list
-        flists = fu.search_files(path[1:-1], r"\.(c|cpp|cuda)$")
-        
-        for f in flists:
-            
-            # no need to compile the file? skip it!
-            if update_file_hash_code(f, db) is False:
-                continue
-
-            # file roots
-            root, leaf = fu.root_leaf(f)
-            
-            # command tokens
-            cmdls = [config_src['compiler'], # gcc/g++/nvcc
-                search_flag(config_src),
-                search_includes(config_src), 
-                f, 
-                search_libraries(config_src), 
-                "-c -o", 
-                _gen_tmp_file(config_dict, leaf)]
-            
-            # final cmd
-            cmd = " ".join(cmdls)
-            
-            # for debug
-            print("exec:", cmd)
-            
-            # execute
-            os.system(cmd)
-
-
-def _gen_tmp_file(config_dict, srcfile):
+def _object_name(filename, path=TORA_TEMP):
     """
     change the extension of file to object file 
     """
-    tmp_config = config_dict['temp']
-    tmp_dir = tmp_config['tmp_path']
+    if not fu.exists(path):
+        fu.mkdir(path)
 
-    if tmp_dir is None:
-        fu.mkdir('tmp')
-        tmp_dir = 'tmp'
-    else:
-        fu.mkdir(tmp_dir)
+    # trim the original root of file path
+    root, leaf = fu.root_leaf(filename)
+    filename = leaf
 
-    if ".cpp" in srcfile: # CPP file
-        obj = srcfile.replace(".cpp", ".o")
-        return fu.gen_filepath(tmp_dir, obj, None)
+    if ".cpp" in filename: # CPP file
+        obj = filename.replace(".cpp", ".o")
+        return fu.gen_filepath(path, obj, None)
 
-    if ".c" in srcfile: # C file
-        obj = srcfile.replace(".c", ".o")
-        return fu.gen_filepath(tmp_dir, obj, None)
+    if ".CPP" in filename: # CPP file
+        obj = filename.replace(".CPP", ".o")
+        return fu.gen_filepath(path, obj, None)
+
+    if ".Cpp" in filename: # CPP file
+        obj = filename.replace(".Cpp", ".o")
+        return fu.gen_filepath(path, obj, None)
+
+    if ".c" in filename: # C file
+        obj = filename.replace(".c", ".o")
+        return fu.gen_filepath(path, obj, None)
+
+    if ".C" in filename: # C file
+        obj = filename.replace(".C", ".o")
+        return fu.gen_filepath(path, obj, None)
     
-    if ".cuda" in srcfile: # CUDA file
-        obj = srcfile.replace(".cuda", ".o")
-        return fu.gen_filepath(tmp_dir, obj, None)
+    if ".cuda" in filename: # CUDA file
+        obj = filename.replace(".cuda", ".o")
+        return fu.gen_filepath(path, obj, None)
+    
 
+def compiling_internal_files(reader, path=TORA_TEMP):
+    """
+    use compiler to compile source file to object file
+    """
+    source_files = reader.src_list()
+    if len(source_files) <= 0:
+        raise excepts.InvalidParamException("config file is invalid")
+
+    # create tora db
+    database = toradb.create_tora_db()
+    if database is None:
+        raise excepts.NoAvailableResourcesFoundException("create tora db failed")
+
+    # update each file's md5
+    for src in source_files:
+
+        if not toradb.update_tora_hash(src, database):
+            continue # file no need to compile
+
+        # generate gcc/g++/nvcc commands
+        cmdline = [reader.compiler(), 
+            reader.includes(),
+            reader.src_flags(),
+            reader.src_macros(),
+            src,
+            "-c -o",
+            _object_name(src)]
+        
+        # for debug
+        cmd = " ".join(cmdline)
+        print("exec:", cmd)
+        os.system(cmd)
+
+    # update tora database
+    toradb.write_tora_db(database)
 
 
 if __name__ == "__main__":
-    """
-    usage: python3 cleanpro.py path_of_config_file command
-    """
-
-    # if script with arguments
-    config = None
-    if len(sys.argv) >= 2:
-        config = read_config(sys.argv[1])
-    else:
-        config = read_config()
-
-    # create tora db if not exists
-    create_tora_db()
-
-    # load tora db from file
-    db = load_tora_db()
+    if len(sys.argv) < 2:
+        raise excepts.InvalidParamException("params len is not correct")
 
     # executing
-    compile_src_to_temp(config, db)
-
-    # update tora db
-    write_tora_db(db)
+    reader = ConfigReader(sys.argv[1])
+    compiling_internal_files(reader)

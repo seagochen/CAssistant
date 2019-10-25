@@ -4,91 +4,85 @@ Tora database
 """
 
 # siki
-from siki.basics.FileUtils import *
-from siki.basics.Exceptions import *
-from siki.basics.Hashcode import *
-
-# self-defined
-from utilities import *
+from siki.basics import FileUtils as fu
+from siki.basics import Hashcode as hcode
+from siki.basics import Exceptions as excepts
 
 # defaults
 import csv
 import os
 
-def create_tora_db():
-    config = read_config()
-    db_config = config['conf']['toradb']
+TORA_CSV=".tora/file.csv"
 
-    # invalid check
-    if db_config is None:
-        raise InvalidParamException('db config is invalid')
+def create_tora_db(path=TORA_CSV):
+    if not fu.exists(".tora"):
+        fu.mkdir(".tora")
 
-    # create if not exists
-    if not os.path.isfile(db_config):
-        touch_file(db_config)
+    if not fu.exists(path):
+        fu.touch_file(path)
 
+    return read_tora_db(path)
 
 
-def load_tora_db():
+def read_tora_db(path=TORA_CSV):
     """
     load tora db
     """
-    config = read_config()
-    db_config = config['conf']['toradb']
-
-    # invalid check
-    if db_config is None:
-        raise InvalidParamException('db config is invalid')
-
     # load data from db
-    db = {}
-    with open(db_config, 'r') as f:
+    database = {}
+    with open(path, 'r') as f:
         reader = csv.reader(f)
         for row in reader:
-            db[row[0]] = row[1]
+            database[row[0]] = row[1]
 
     # return to caller
-    return db
+    return database
 
 
-def update_file_hash_code(filename, db):
+def write_tora_db(database, path=TORA_CSV):
+    """
+    write update back to file
+    """
+    # write back
+    with open(path, 'w') as f:
+        writer = csv.writer(f)
+        for key, val in database.items():
+            writer.writerow([key, val])
+
+
+def update_tora_hash(filename, database):
     """
     load data from file, and generate file hash code
     """
+    if not fu.exists(filename) or type(database) is not dict:
+        return False
+
     # calculate file md5
-    md5 = compute_file_md5(filename)
+    md5 = hcode.compute_file_md5(filename)
 
     # check original filename md5
     omd5 = ""
-    if filename in db.keys():
-        omd5 = db[filename]
+    if filename in database.keys():
+        omd5 = database[filename]
 
     # not record this file
     if omd5 is None:
-        db[filename] = md5
+        database[filename] = md5
         return True
     if md5 != omd5:
-        db[filename] = md5
+        database[filename] = md5
         return True
     
     return False
 
 
+if __name__ == "__main__":
+    create_tora_db()
+    db = read_tora_db()
 
-def write_tora_db(db):
-    """
-    write update back to file
-    """
+    flist = fu.search_files(".", ".py$")
+    for f in flist:
+        update_tora_hash(f, db)
+    
+    write_tora_db(db)
 
-    config = read_config()
-    db_config = config['conf']['toradb']
-
-    # invalid check
-    if db_config is None:
-        raise InvalidParamException('db config is invalid')
-
-    # write back
-    with open(db_config, 'w') as f:
-        writer = csv.writer(f)
-        for key, val in db.items():
-            writer.writerow([key, val])
