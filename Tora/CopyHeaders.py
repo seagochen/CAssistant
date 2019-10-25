@@ -49,7 +49,7 @@ def copy_headers_if_necessary(header_dirs, output_dir):
     current_headers_dir = FileNodeTree(".")
 
     for h_dir in h_dirs:
-        tree = ftree.traversal_dir(h_dir, r"\.[h|hpp|H|Hpp|HPP]$")
+        tree = ftree.traversal_dir(h_dir, r"\.(h|hpp|H|Hpp|HPP)$")
 
         # add trees to current header tree
         if len(tree.only_files()) > 0:
