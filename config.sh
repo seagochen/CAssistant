@@ -41,7 +41,7 @@ fi
 
 # echo message
 echo -e "\n"
-echo "Environment check finished, now creating the empty project with name '$proname'"
+echo "Environment check finished, now running the script to install tora to the project '$proname'"
 
 # generate empty project dir
 python3 Tora/PreparePro.py $proname
