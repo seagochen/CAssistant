@@ -18,7 +18,7 @@ import ToraDB as toradb
 TORA_TEMP=".tora/temp"
 
 
-def _object_name(filename, path=TORA_TEMP):
+def object_name(filename, path=TORA_TEMP):
     """
     change the extension of file to object file 
     """
@@ -81,7 +81,7 @@ def compiling_internal_files(reader, path=TORA_TEMP):
             reader.sys_libs(),
             src,
             "-c -o",
-            _object_name(src)]
+            object_name(src)]
         
         # for debug
         cmd = " ".join(cmdline)

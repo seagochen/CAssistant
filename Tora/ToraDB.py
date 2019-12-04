@@ -50,6 +50,12 @@ def write_tora_db(database, path=TORA_CSV):
             writer.writerow([key, val])
 
 
+def temp_file_not_exists(srcfile):
+    from CompileSrc import object_name
+    obj_file = object_name(srcfile)
+    return not fu.exists(obj_file)
+
+
 def update_tora_hash(filename, database):
     """
     load data from file, and generate file hash code
@@ -70,6 +76,9 @@ def update_tora_hash(filename, database):
         database[filename] = md5
         return True
     if md5 != omd5:
+        database[filename] = md5
+        return True
+    if temp_file_not_exists(filename):
         database[filename] = md5
         return True
     
