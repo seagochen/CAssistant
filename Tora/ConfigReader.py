@@ -64,6 +64,7 @@ class ConfigReader(object):
     def compiler(self):
         return self.config['conf']['compiler']
 
+
     def sys_libs(self):
         tokens = ListConvert(self.config['conf']['sys_libs']).to_list()
         
@@ -77,39 +78,45 @@ class ConfigReader(object):
         return line
 
 
-    def dir_libs(self):
-        dir_path = ListConvert(self.config['conf']['dir_libs']).to_list()
+    def ext_libs(self):
+        lib_path = ListConvert(self.config['conf']['ext_libs']).to_list()
 
-        if dir_path is None or len(dir_path) <= 0:
+        if lib_path is None or len(lib_path) <= 0:
             return ""
 
-        dirs = []
-        for path in dir_path:
-            dirs.append(path[1:-1])
-        
         a_files = []
-        for dirlib in dirs:
-            files = fu.search_files(dirlib, "\.a$")
-            if len(files) > 0:
-                a_files.extend(files)
+        for path in lib_path:
+            path = path[1:-1] # trim \" from "path"
 
-        return " ".join(a_files)
+            if fu.isdir(path): # if path is a folder
+                files = fu.search_files(path, "\.a$") # only allow *.a files
+                if files and len(files) > 0:
+                    a_files.extend(files)
+                
+                continue
+            
+            if fu.isfile(path) and path.endswith(".a"): # if path is a file
+                a_files.append(path)
+
+        # return to caller
+        func = lambda x: " ".join(a_files) if len(a_files) > 0 else ""
+        return func(n)
 
 
-    def file_libs(self):
-        flibs = ListConvert(self.config['conf']['file_libs']).to_list()
+    def package_dirs(self):
+        packages = ListConvert(self.config['gen']['package_dirs']).to_list()
 
-        if flibs is None or len(flibs) <= 0:
-            return ""
-
-        temp = []
-        for lib in flibs:
-            temp.append(lib[1:-1])
+        if packages is None or len(packages) <= 0:
+            return []
         
-        return " ".join(temp)
+        dirs = []
+        for package in packages:
+            dirs.append( package[1:-1] ) # trim \" from "package"
+
+        return dirs
 
 
-    def include_list(self):
+    def includes(self):
         inc_headers = ListConvert(self.config['conf']['includes']).to_list()
 
         if inc_headers is None or len(inc_headers) <= 0:
@@ -117,14 +124,10 @@ class ConfigReader(object):
 
         flist = []
         for token in inc_headers:
-            flist.append(token[1:-1])
+            flist.append(token[1:-1])            
 
-        return flist    
-
-    
-    def includes(self):
         line = ""
-        for token in self.include_list():
+        for token in flist:
             line += "-I{} ".format(token)
         
         return line
@@ -161,6 +164,7 @@ class ConfigReader(object):
             line += "-{} ".format(t[1:-1])
         return line  
 
+
     def src_macros(self):
         macros = ListConvert(self.config['src']['macros']).to_list()
 
@@ -177,6 +181,7 @@ class ConfigReader(object):
     def gen_type(self):
         return self.config['gen']['type']
 
+
     def gen_name(self):
         if self.gen_type() == "exe":
             return self.config['gen']['name']
@@ -186,6 +191,7 @@ class ConfigReader(object):
             return "lib{}.a".format(self.config['gen']['name'])
         else:
             raise excepts.InvalidParamException("Invalid generated file type")
+
 
     def gen_flags(self):
         flags = ListConvert(self.config['gen']['flags']).to_list()
@@ -198,6 +204,7 @@ class ConfigReader(object):
         for t in flags:
             line += "-{} ".format(t[1:-1])
         return line
+
 
     def gen_output_dir(self):
         return self.config['gen']['output_dir']
