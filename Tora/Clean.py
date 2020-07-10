@@ -4,7 +4,8 @@ This file provides Tora clean methods
 """
 
 # import siki
-from siki.basics import FileUtils as fu
+from siki.basics import FileUtils
+from siki.basics import Exceptions
 
 # import standard modules
 import os
@@ -17,7 +18,7 @@ TORA_TEMP=".tora"
 
 
 def clean_temp_files(path=TORA_TEMP):
-    if not fu.exists(path):
+    if not FileUtils.exists(path):
         return None
 
     os.system("rm -rf {}".format(path))
@@ -25,7 +26,7 @@ def clean_temp_files(path=TORA_TEMP):
 
 
 def clean_gen_file(reader):
-    if not fu.exists(reader.gen_output_dir()):
+    if not FileUtils.exists(reader.gen_output_dir()):
         return None
 
     os.system("rm -rf {}".format(reader.gen_output_dir()))
@@ -34,7 +35,7 @@ def clean_gen_file(reader):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        raise excepts.InvalidParamException("params len is not correct")
+        raise Exceptions.InvalidParamException("params len is not correct")
 
     reader = ConfigReader(sys.argv[1])
 

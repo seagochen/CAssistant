@@ -3,6 +3,10 @@
 This file reads configuration file
 """
 
+import siki.basics.Exceptions
+import siki.basics.FileUtils
+
+
 class ListConvert(object):
     """
     This module can convert a string with the format 
@@ -21,7 +25,6 @@ class ListConvert(object):
         ret2 = re.match(pattern_sq, self.strdict)
         return ret1 or ret2
 
-
     def to_list(self):
         if self.strdict is None or len(self.strdict) <= 0:
             return None
@@ -31,7 +34,7 @@ class ListConvert(object):
 
         # trim the string first
         self.strdict = self.strdict.replace(" ", "")
-        
+
         # trim the barackets
         strdict = self.strdict[1:-1]
 
@@ -39,9 +42,6 @@ class ListConvert(object):
         tokens = strdict.split(',')
         return tokens
 
-
-import siki.basics.Exceptions as excepts
-import siki.basics.FileUtils as fu
 
 class ConfigReader(object):
     """
@@ -53,30 +53,27 @@ class ConfigReader(object):
         import configparser
 
         if config_file is None:
-            raise excepts.NullPointerException("configure file path could be null")
+            raise siki.basics.Exceptions.NullPointerException("configure file path could be null")
 
         config = configparser.RawConfigParser()
         config.read(config_file)
 
         self.config = config
 
-
     def compiler(self):
         return self.config['conf']['compiler']
 
-
     def sys_libs(self):
         tokens = ListConvert(self.config['conf']['sys_libs']).to_list()
-        
+
         if tokens is None or len(tokens) <= 0:
             return ""
-        
+
         line = ""
         for token in tokens:
             line += "-l{} ".format(token[1:-1])
 
         return line
-
 
     def ext_libs(self):
         lib_path = ListConvert(self.config['conf']['ext_libs']).to_list()
@@ -86,35 +83,36 @@ class ConfigReader(object):
 
         a_files = []
         for path in lib_path:
-            path = path[1:-1] # trim \" from "path"
+            path = path[1:-1]  # trim \" from "path"
 
-            if fu.isdir(path): # if path is a folder
-                files = fu.search_files(path, "\.a$") # only allow *.a files
+            if siki.basics.FileUtils.isdir(path):  # if path is a folder
+                files = siki.basics.FileUtils.search_files(path, "\.a$")  # only allow *.a files
                 if files and len(files) > 0:
                     a_files.extend(files)
-                
+
                 continue
-            
-            if fu.isfile(path) and path.endswith(".a"): # if path is a file
+
+            if siki.basics.FileUtils.isfile(path) and path.endswith(".a"):  # if path is a file
                 a_files.append(path)
 
         # return to caller
-        func = lambda x: " ".join(a_files) if len(a_files) > 0 else ""
-        return func(n)
+        if len(a_files) > 0:
+            return " ".join(a_files)
 
+        else:
+            return ""
 
     def package_dirs(self):
         packages = ListConvert(self.config['gen']['package_dirs']).to_list()
 
         if packages is None or len(packages) <= 0:
             return []
-        
+
         dirs = []
         for package in packages:
-            dirs.append( package[1:-1] ) # trim \" from "package"
+            dirs.append(package[1:-1])  # trim \" from "package"
 
         return dirs
-
 
     def includes(self):
         inc_headers = ListConvert(self.config['conf']['includes']).to_list()
@@ -124,15 +122,14 @@ class ConfigReader(object):
 
         flist = []
         for token in inc_headers:
-            flist.append(token[1:-1])            
+            flist.append(token[1:-1])
 
         line = ""
         for token in flist:
             line += "-I{} ".format(token)
-        
+
         return line
 
-    
     def src_list(self):
         source_pathes = ListConvert(self.config['src']['src_path']).to_list()
 
@@ -141,8 +138,8 @@ class ConfigReader(object):
 
         files = []
         for path in source_pathes:
-            source_files = fu.search_files(path[1:-1], 
-                r"\.(c|cpp|cuda|C|CPP|Cpp)$")
+            source_files = siki.basics.FileUtils.search_files(path[1:-1],
+                                                              r"\.(c|cpp|cuda|C|CPP|Cpp)$")
 
             if source_files is None or len(source_files) <= 0:
                 continue
@@ -150,7 +147,6 @@ class ConfigReader(object):
             files.extend(source_files)
 
         return files
-
 
     def src_flags(self):
         flags = ListConvert(self.config['src']['flags']).to_list()
@@ -162,8 +158,7 @@ class ConfigReader(object):
         line = ""
         for t in flags:
             line += "-{} ".format(t[1:-1])
-        return line  
-
+        return line
 
     def src_macros(self):
         macros = ListConvert(self.config['src']['macros']).to_list()
@@ -175,12 +170,10 @@ class ConfigReader(object):
         line = ""
         for t in macros:
             line += "-D{} ".format(t[1:-1])
-        return line          
-
+        return line
 
     def gen_type(self):
         return self.config['gen']['type']
-
 
     def gen_name(self):
         if self.gen_type() == "exe":
@@ -190,8 +183,7 @@ class ConfigReader(object):
         elif self.gen_type() == "static":
             return "lib{}.a".format(self.config['gen']['name'])
         else:
-            raise excepts.InvalidParamException("Invalid generated file type")
-
+            raise siki.basics.Exceptions.InvalidParamException("Invalid generated file type")
 
     def gen_flags(self):
         flags = ListConvert(self.config['gen']['flags']).to_list()
@@ -205,7 +197,6 @@ class ConfigReader(object):
             line += "-{} ".format(t[1:-1])
         return line
 
-
     def gen_output_dir(self):
         return self.config['gen']['output_dir']
 
@@ -215,8 +206,6 @@ if __name__ == "__main__":
     reader = ConfigReader("project.conf")
     print(reader.compiler())
     print(reader.sys_libs())
-    print(reader.dir_libs())
-    print(reader.file_libs())
     print(reader.includes())
     print(reader.src_list())
     print(reader.src_flags())

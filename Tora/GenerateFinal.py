@@ -3,7 +3,7 @@
 This file is trying to compile the obj-file to final code
 """
 # import siki
-from siki.basics import FileUtils as fu
+from siki.basics import Exceptions
 
 # import system standard modules
 import os
@@ -55,7 +55,7 @@ def generate_final(reader, path=TORA_TEMP):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        raise excepts.InvalidParamException("params len is not correct")
+        raise Exceptions.InvalidParamException("params len is not correct")
 
     # executing
     reader = ConfigReader(sys.argv[1])
