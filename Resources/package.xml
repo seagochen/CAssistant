@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<package>
+    <data>
+        <dir path="/Users/orlando/Desktop/Triangle" to="build/include/"/>
+    </data>
+
+    <incs>
+        <dir path="/Users/orlando/Desktop/Triangle" to="build/include/"/>
+    </incs>
+
+    <files>
+        <file path="./build/libtriangle.so" to="./build/lib"/>
+        <file path="./build/libtriangle.a" to="./build/lib"/>
+    </files>
+</package>

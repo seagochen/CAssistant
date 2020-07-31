@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config>
+    <requirements uses="g++">
+        <flags>
+            <item>std=c++14</item>
+        </flags>
+        <!-- pkg-config support is provided, uncomment the following will enable the function,
+         you only need to specify which pkg file information to look up-->
+<!--        <pkgs>-->
+            <!--for example: opencv, this is equivalent to `pkg-config libs cflags opencv`-->
+<!--            <item>opencv</item> -->
+<!--        </pkgs>-->
+
+        <!-- Macro definition command -->
+<!--        <macros>-->
+<!--            <define name="DATA" value="1" />-->
+<!--            <define name="USE_DEBUG" />-->
+<!--        </macros>-->
+    </requirements>
+
+    <!-- There is only one solution in a configuration file, and there can be multiple projects in a solution  -->
+    <solution>
+        <!-- Three types available, dynamic, static, exe -->
+        <project name="foo1" output="build" type="static" src="foo1/src">
+
+            <!-- Headers，non-system third-party header files, need to be given specific paths,
+             but also support relative paths -->
+            <includes>
+                <path>foo/includes</path>
+                <path>/usr/local/Cellar/boost/1.72.0_3/include</path>
+            </includes>
+
+            <!-- This indicates to search the folder path, and link all possible libraries -->
+<!--            <libraries path="/usr/local/Cellar/boost/1.72.0_3/lib" />-->
+
+            <!-- This indicates a customized path, and link to some particular libraries-->
+<!--            <libraries path="/usr/local/Cellar/libuv/1.38.1/lib">-->
+<!--                <item>uv</item>-->
+<!--            </libraries>-->
+
+            <!-- This indicates the default path, and link to some system libraries -->
+<!--            <libraries>-->
+<!--                <item>pthread</item>-->
+<!--            </libraries>-->
+        </project>
+
+        <!-- Another project, the configuration is the same as the previous one -->
+        <project name="foo2" output="build" type="static" src="foo2/src"/>
+    </solution>
+
+</config>
