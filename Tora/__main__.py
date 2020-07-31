@@ -29,12 +29,11 @@ def update_tora():
     print("Now, tora is trying to update itself by using pip3...")
     cmd = "pip3 install --upgrade tora"
     os.system(cmd)
-    print("Done...")
 
 
 def prepare_solution(folder="MySolution"):
     # 创建文件夹
-    FileUtils.mkdir(folder)
+    FileUtils.mkdir(f"{folder}/src")
     print(f"The {folder} has created by the script.",
           "Now it tries to download the configuration files from the GitHub...")
 
@@ -46,12 +45,9 @@ def prepare_solution(folder="MySolution"):
     wget.download(compile_url, f"{folder}/solution.xml")
     wget.download(package_url, f"{folder}/package.xml")
 
-    print("Done...")
-
 
 def package_solution(xml="package.xml"):
     PackageHandler.generate_package(xml)
-    print("Done...")
 
 
 def compile_solution(xml="solution.xml"):
@@ -59,32 +55,64 @@ def compile_solution(xml="solution.xml"):
     OutputHandler.generate_final(xml)
 
 
+class Switch(object):
+
+    def __init__(self, value):
+        self.value = value
+        self.fall = False
+
+    def __iter__(self):
+        """Return the match method once, then stop"""
+        yield self.match
+        raise StopIteration
+
+    def match(self, *args):
+        """Indicate whether or not to enter a case suite"""
+        if self.fall or not args:
+            return True
+        elif self.value in args:
+            self.fall = True
+            return True
+        else:
+            return False
+
+
 if __name__ == "__main__":
 
-    # 用户没有指定, 或者指令为help
-    if len(sys.argv) <= 1 or sys.argv[1] == 'help':
+    # 用户没有指定
+    if len(sys.argv) <= 1:
         help_msg()
+        exit(0)
 
-    # 用户指令为update, 尝试更新tora
-    if sys.argv[1] == 'update':
-        update_tora()
+    for case in Switch(sys.argv[1]):
+        if case('help'):  # 指令为help
+            help_msg()
+            break
 
-    # 用户指令为prepare，创建空白的工程项目
-    if sys.argv[1] == 'prepare':
-        if len(sys.argv) == 3:
-            prepare_solution(sys.argv[2])
-        else:
-            prepare_solution()
+        if case('update'):  # 用户指令为update, 尝试更新tora
+            update_tora()
+            break
 
-    # 用户指令为package, 对工程进行打包
-    if sys.argv[1] == 'package':
-        if len(sys.argv) == 3:
-            package_solution(sys.argv[2])
-        else:
-            package_solution()
+        if case('prepare'):  # 用户指令为prepare，创建空白的工程项目
+            if len(sys.argv) == 3:
+                prepare_solution(sys.argv[2])
+            else:
+                prepare_solution()
+            break
 
+        if case('compile'): # 用户指令为compile, 编译工程项目
+            if len(sys.argv) == 3:
+                compile_solution(sys.argv[2])
+            else:
+                compile_solution()
+            break
 
+        if case('package'):  # 用户指令为package, 对工程进行打包
+            if len(sys.argv) == 3:
+                package_solution(sys.argv[2])
+            else:
+                package_solution()
+            break
 
-
-
-
+    # debug
+    print("Done...")

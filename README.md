@@ -1,5 +1,5 @@
 # README
-*Last Updated: Oct 25, 2019*
+*Last Updated: Jul 31, 2020*
 
 ## Why Makefile? 
 
@@ -9,28 +9,40 @@ Tora does the same thing which Makefile was. It's developed based on Python 3 (b
 
 ## How to use it?
 
-1. Click tab of **[release](https://github.com/seagochen/Tora/releases)** select the recently version and download.
-
-2. Please use **pip3** to install the Tora's dependency library->**siki** before you trying to compile source code.
+* First, use the **pip3** to install the Tora:
 
 ```
-    pip3 install siki
+    pip3 install tora
 ```
 
-3. Place Tora under your source code.
+* For linux and MacOS users, please place the **tora.linux.sh** file to PATH or put it to the /usr/bin/, and rename it to tora.sh.
 
-4. Setup the configure file and run Makefile.
+* To new a empty project, like:
 
-5. Wait for a moment.
+```
+    tora.sh new {solution name}
+```
 
-6. Done!
+* Put your C/C++ codes to the directory.
 
+* Edit both xml files.
+
+* To build your project under the folder, like:
+
+```
+    tora.sh build
+```
+
+* To package your outputs, like:
+
+```
+    tora.sh package
+```
 
 ## What needs to be noted?
 
-Currently, Tora supports Linux and MacOS only. Because I haven't enough time to let it suit Windows. 
-
-If you may do me a favor, and contribute your code to let it works with Windows.
+Currently, Tora supports Linux and MacOS only. This project is free to use, and based on the license of GPLv3.
+You're welcome to contribute code here!
 
 ## What a sample?
 
