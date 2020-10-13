@@ -11,7 +11,6 @@ import wget
 from siki.basics import FileUtils
 
 from Tora import PackageHandler
-from Tora import ProjectConfigChecker
 from Tora import SourceHandler, OutputHandler
 
 
@@ -58,14 +57,9 @@ def package_solution(xml="package.xml"):
 
 
 def compile_solution(xml="solution.xml"):
-    ret, feedback = ProjectConfigChecker.configuration_verification(xml)
-
-    if ret:  # check passed
-        SourceHandler.compiling_sources(xml)
-        OutputHandler.generate_final(xml)
-        print("done")
-    else:
-        print(feedback)
+    SourceHandler.compiling_sources(xml)
+    OutputHandler.generate_final(xml)
+    print("done")
 
 
 class Switch(object):
@@ -113,7 +107,7 @@ if __name__ == "__main__":
                 prepare_solution()
             break
 
-        if case('compile'): # 用户指令为compile, 编译工程项目
+        if case('compile'):  # 用户指令为compile, 编译工程项目
             if len(sys.argv) == 3:
                 compile_solution(sys.argv[2])
             else:
