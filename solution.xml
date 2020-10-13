@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config>
+    <requirements uses="g++">
+        <flags>
+            <item>std=c++14</item>
+        </flags>
+    </requirements>
+
+    <!-- There is only one solution in a configuration file, and there can be multiple projects in a solution  -->
+    <solution>
+        <!-- Three types available, dynamic, static, exe -->
+        <project name="tld" output="build" type="exe" src="src">
+
+            <!-- Headers，non-system third-party header files, need to be given specific paths,
+             but also support relative paths -->
+            <includes>
+                <path>incs</path>
+                <path>/opt/opencv/opencv.3.4.8/include</path>
+            </includes>
+
+            <!-- This indicates to search the folder path, and link all possible libraries -->
+            <libraries path="/opt/opencv/opencv.3.4.8/lib" />
+
+            <!-- This indicates a customized path, and link to some particular libraries-->
+            <libraries path="/home/orlando/Repositories/Tora" >
+                <item>Triangle</item>
+            </libraries>
+        </project>
+    </solution>
+
+</config>

@@ -1,0 +1,83 @@
+#!/bin/bash
+
+# functions
+function exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+# install tora
+function install_tora() {
+  if python3 -c "import tora" &> /dev/null; then
+    echo 'Environment check passed.'
+  else
+    pip3 install tora
+  fi
+}
+
+# Test python3 is available
+# and whether the dependency package has been installed
+function check_env() {
+  if exists python3; then
+    if exists pip3; then
+      install_tora
+    else
+      echo "You should install pip3 first."
+    fi
+  else
+      echo 'You should install python3 to your system before running this script.'
+  fi
+}
+
+
+function new_project() {
+  # Read usr input and create a new folder for project
+  folder=MySolution
+  echo "This script will help you to create an empty C/C++ project..."
+  read -r -t 30 -p "Your project name please: " folder
+  echo -e "\n"
+
+  # generate empty project dir
+  python3 -m Tora prepare "$folder"
+}
+
+# print help
+if [ $# -lt 1 ]; then
+  echo ""
+  echo "tora.sh [command]"
+  echo ""
+  echo ""
+  echo "   tora.sh new -------------- To create an empty project"
+  echo "   tora.sh build ------------ To build the solution according to the xml file"
+  echo "   tora.sh package ---------- To package the solution according to the xml file"
+  echo "   tora.sh check ------------ To check the environment, and trying to install Tora if necessary"
+  echo "   tora.sh update ----------- To update the tora to the newest"
+  echo ""
+fi
+
+# handle [new/build/package/check/update] commands
+if [ $# -lt 2 ]; then
+
+  if [ "$1" == "new" ]; then
+    new_project
+  fi
+
+  if [ "$1" == "build" ]; then
+    python3 -m Tora compile solution.xml
+  fi
+
+  if [ "$1" == "package" ]; then
+    python3 -m Tora package package.xml
+  fi
+
+  if [ "$1" == "check" ]; then
+    clear
+    check_env
+    echo "Done..."
+  fi
+
+  if [ "$1" == "update" ]; then
+    python3 -m Tora update
+  fi
+
+fi
+

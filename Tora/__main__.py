@@ -4,15 +4,15 @@
 # Created: Jul 30, 2020
 # Modified: Jul 30, 2020
 
-from Tora import PackageHandler
-from Tora import SourceHandler
-from Tora import OutputHandler
-
 import os
 import sys
-import wget
 
+import wget
 from siki.basics import FileUtils
+
+from Tora import PackageHandler
+from Tora import ProjectConfigChecker
+from Tora import SourceHandler, OutputHandler
 
 
 def help_msg():
@@ -42,8 +42,15 @@ def prepare_solution(folder="MySolution"):
     package_url = "https://raw.githubusercontent.com/seagochen/tora/master/Resources/package.xml"
 
     # 下载文件
+    print("Downloading solution file from remote server...")
     wget.download(compile_url, f"{folder}/solution.xml")
+    print("Downloading package file from remote server...")
     wget.download(package_url, f"{folder}/package.xml")
+    print("Downloading script file from remote server...")
+    wget.download(package_url, f"{folder}/tora.sh")
+
+    # message feedback
+    print("Done...")
 
 
 def package_solution(xml="package.xml"):
@@ -51,8 +58,14 @@ def package_solution(xml="package.xml"):
 
 
 def compile_solution(xml="solution.xml"):
-    SourceHandler.compiling_sources(xml)
-    OutputHandler.generate_final(xml)
+    ret, feedback = ProjectConfigChecker.configuration_verification(xml)
+
+    if ret:  # check passed
+        SourceHandler.compiling_sources(xml)
+        OutputHandler.generate_final(xml)
+        print("done")
+    else:
+        print(feedback)
 
 
 class Switch(object):

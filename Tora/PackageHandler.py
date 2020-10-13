@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 # Author: Orlando Chen
 # Created: Jul 28, 2020
-# Modified: Jul 30, 2020
+# Modified: Oct 07, 2020
 
 import untangle
 import os
 from siki.basics import FileUtils
 
 
-def __file_full_root(filepath: str):
-    _, leaf = FileUtils.root_leaf(filepath)
-    return filepath.replace(leaf, "")
+def __file_full_root(file_path: str):
+    _, leaf = FileUtils.root_leaf(file_path)
+    return file_path.replace(leaf, "")
 
 
 def __copy_incs(path_from, path_to):

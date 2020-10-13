@@ -1,5 +1,5 @@
 #!/usr/bin/evn python
-#coding=utf-8
+# -*- coding: utf-8 -*-
 
 import setuptools
 
@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="tora",
-    version="0.0.1",
+    version="0.2.3",
     author="Orlando Chen",
     author_email="seagochen@hotmail.com",
     description="A similar utility to Makefile, but easier to C/C project management.",
