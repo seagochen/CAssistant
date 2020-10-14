@@ -6,7 +6,7 @@
 
 import untangle
 from siki.basics import FileUtils, Exceptions
-from Tora.Solutions.BasicProjectParser import BasicXMLDefined
+from Tora.Solutions.BasicProjectParser import BasicProjectDefined
 
 
 def convert_libraries_link_info(key, val):
@@ -17,13 +17,16 @@ def convert_libraries_link_info(key, val):
     return None
 
 
-class XMLDefinedProject(BasicXMLDefined):
+class XMLDefinedProject(BasicProjectDefined):
 
     def __init__(self, project: untangle.Element):
         super().__init__(project)
 
         if len(self.includes) > 0:
-            self.includes = "-I".join(self.includes)
+            includes = []
+            for inc in self.includes:
+                includes.append(f"-I{inc}")
+            self.includes = includes
 
         if len(self.libraries) > 0:
             link_libs = []
@@ -34,4 +37,4 @@ class XMLDefinedProject(BasicXMLDefined):
                     link_libs.append(clause)
 
             # dict transforms to string clause
-            self.libraries = " ".join(link_libs)
+            self.libraries = link_libs

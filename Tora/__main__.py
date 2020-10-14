@@ -11,7 +11,7 @@ import wget
 from siki.basics import FileUtils
 
 from Tora import PackageHandler
-from Tora import SourceHandler, OutputHandler
+from Tora import SourceHandler, OutputHandler, ProjectChecker
 
 
 def help_msg():
@@ -46,7 +46,7 @@ def prepare_solution(folder="MySolution"):
     print("Downloading package file from remote server...")
     wget.download(package_url, f"{folder}/package.xml")
     print("Downloading script file from remote server...")
-    wget.download(package_url, f"{folder}/tora.sh")
+    wget.download(package_url, f"{folder}/tora")
 
     # message feedback
     print("Done...")
@@ -57,9 +57,11 @@ def package_solution(xml="package.xml"):
 
 
 def compile_solution(xml="solution.xml"):
+
+    ProjectChecker.configuration_verification(xml)
     SourceHandler.compiling_sources(xml)
     OutputHandler.generate_final(xml)
-    print("done")
+    print("Done")
 
 
 class Switch(object):
@@ -120,6 +122,3 @@ if __name__ == "__main__":
             else:
                 package_solution()
             break
-
-    # debug
-    print("Done...")

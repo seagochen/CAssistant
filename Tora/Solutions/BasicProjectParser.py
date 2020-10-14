@@ -94,7 +94,7 @@ def search_src_files(src_dir: str):
     return FileUtils.search_files(src_dir, r"\.(c|cpp|C|CPP|Cpp|cuda|CUDA|cu|CU|Cu)$")
 
 
-class BasicXMLDefined(object):
+class BasicProjectDefined(object):
 
     def __init__(self, project: untangle.Element):
         self.type = "exe"
@@ -127,3 +127,15 @@ class BasicXMLDefined(object):
         if hasattr(self, item):
             return self.__dict__[item]
         return None
+
+    def __str__(self):
+        strings = [f"Name: '{self.name}' type: '{self.type}' output dir: '{self.output}'",
+                   f"with sources: {self.src_files}"]
+
+        if hasattr(self, 'includes'):
+            strings.append(f"with headers: {self.includes}")
+
+        if hasattr(self, 'libraries'):
+            strings.append(f"with libraries: {self.libraries}")
+
+        return "\n".join(strings)

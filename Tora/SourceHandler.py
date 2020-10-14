@@ -12,6 +12,7 @@ from Tora.Components.ToraDB import TORA_TEMP
 from Tora.Components import ObjectFilesMan
 
 from siki.basics import Exceptions
+from siki.dstruct import ListExtern
 
 
 def __gen_links_and_headers(solution, project):
