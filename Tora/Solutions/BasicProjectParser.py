@@ -21,6 +21,18 @@ def link_header(includes: untangle.Element):
     return headers_link
 
 
+def preprocess_libraries(lib: str):
+    root, leaf = FileUtils.root_leaf(lib)
+
+    if leaf[0:3] == "lib":
+        if leaf[-3:] == ".so":
+            return f"-l{leaf[3:-3]}"
+        if leaf[-2:] == ".a":
+            return f"-l{leaf[3:-2]}"
+
+    return lib
+
+
 def link_custom_libs(library_path: untangle.Element):
     """
     link system default libraries
@@ -38,13 +50,9 @@ def link_custom_libs(library_path: untangle.Element):
 
     else:  # with only a path, search and links all libraries as possible
         libraries = []
-        for item in FileUtils.search_files(library_path['path'], r"\.a$"):  # 类linux系统，默认静态文件是libXXX.a
-            _, leaf = FileUtils.root_leaf(item)
-            libraries.append(f"{leaf[3:-2]}")
 
-        for item in FileUtils.search_files(library_path['path'], r"\.so$"):  # dynamics files
-            _, leaf = FileUtils.root_leaf(item)
-            libraries.append(f"{leaf[3:-3]}")
+        for lib in FileUtils.search_files(library_path['path'], r"[\.a|\.so]$"):
+            libraries.append(preprocess_libraries(lib))
 
         # finally
         custom_lib[library_path['path']] = libraries

@@ -29,9 +29,9 @@ class PKGConfigs(object):
 
     def pkg_search_libs_only(self, name):
         if pkgconfig.exists(name):
-            self.headers = f"{pkgconfig.libs(name)}"
+            self.libs = f"{pkgconfig.libs(name)}"
         else:
-            self.headers = None
+            self.libs = None
 
     def __str__(self):
         if self.headers is None and self.libs is not None:

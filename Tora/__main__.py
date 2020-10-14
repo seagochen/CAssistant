@@ -30,6 +30,12 @@ def update_tora():
     os.system(cmd)
 
 
+def clean_tora():
+    print("Now, tora is trying to clean the buffers...")
+    cmd = "rm -r .tora"
+    os.system("rm -r .tora")
+
+
 def prepare_solution(folder="MySolution"):
     # 创建文件夹
     FileUtils.mkdir(f"{folder}/src")
@@ -57,7 +63,6 @@ def package_solution(xml="package.xml"):
 
 
 def compile_solution(xml="solution.xml"):
-
     ProjectChecker.configuration_verification(xml)
     SourceHandler.compiling_sources(xml)
     OutputHandler.generate_final(xml)
@@ -121,4 +126,8 @@ if __name__ == "__main__":
                 package_solution(sys.argv[2])
             else:
                 package_solution()
+            break
+
+        if case('clean'):  # cleanup the temporary files
+            clean_tora()
             break

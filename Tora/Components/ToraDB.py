@@ -33,8 +33,7 @@ class ToraDatabase(object):
         # trying to load data from csv
         self.frame = pandas.read_csv(data, names=['project', 'filename', 'hash', 'date'])
 
-        print(self.frame)
-
+        # print(self.frame)
         # flag
         self.updated = False
 

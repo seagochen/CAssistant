@@ -48,6 +48,7 @@ if [ $# -lt 1 ]; then
   echo ""
   echo "   tora.sh new -------------- To create an empty project"
   echo "   tora.sh build ------------ To build the solution according to the xml file"
+  echo "   tora.sh rebuild ---------- To rebuild the solution according to the xml file"
   echo "   tora.sh package ---------- To package the solution according to the xml file"
   echo "   tora.sh check ------------ To check the environment, and trying to install Tora if necessary"
   echo "   tora.sh update ----------- To update the tora to the newest"
@@ -62,6 +63,11 @@ if [ $# -lt 2 ]; then
   fi
 
   if [ "$1" == "build" ]; then
+    python3 -m Tora compile solution.xml
+  fi
+
+  if [ "$1" == "rebuild" ]; then
+    python3 -m Tora clean
     python3 -m Tora compile solution.xml
   fi
 
@@ -80,4 +86,3 @@ if [ $# -lt 2 ]; then
   fi
 
 fi
-

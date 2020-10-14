@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="tora",
-    version="0.2.4",
+    version="0.2.5",
     author="Orlando Chen",
     author_email="seagochen@hotmail.com",
     description="A similar utility to Makefile, but easier to C/C project management.",

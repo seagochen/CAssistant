@@ -5,12 +5,15 @@
 # Modified: Oct 7, 2020
 
 import untangle
+import os
 
 from Tora.Solutions.BasicCompilerParser import BasicCompilerDefined
 from Tora.Solutions.BasicProjectParser import BasicProjectDefined
 
 
 def configuration_verification(file: str):
+    print("===================================================================================================")
+
     # check compiler configuration
     compiler = BasicCompilerDefined(file)
     print(compiler)
@@ -24,3 +27,5 @@ def configuration_verification(file: str):
         print("---------------------------------------------------------------------------------------------------")
         project = BasicProjectDefined(project)
         print(project)
+
+    print("===================================================================================================")

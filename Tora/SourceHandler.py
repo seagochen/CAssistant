@@ -6,13 +6,12 @@
 
 import os
 
-from Tora.Solutions.XMLDefinedSolution import XMLDefinedSolution
-from Tora.Components.ToraDB import ToraDatabase
-from Tora.Components.ToraDB import TORA_TEMP
-from Tora.Components import ObjectFilesMan
-
 from siki.basics import Exceptions
-from siki.dstruct import ListExtern
+
+from Tora.Components import ObjectFilesMan
+from Tora.Components.ToraDB import TORA_TEMP
+from Tora.Components.ToraDB import ToraDatabase
+from Tora.Solutions.XMLDefinedSolution import XMLDefinedSolution
 
 
 def __gen_links_and_headers(solution, project):
@@ -85,7 +84,7 @@ def compiling_sources(xml_file: str):
                     # 生成编译命令
                     cmd = f"{compiler_tags} {headers_links} {file} -c -o " \
                           f"{ObjectFilesMan.generate_object_file(project['name'], file, TORA_TEMP)}"
-                    print("exec:", cmd)
+                    # print("exec:", cmd)
                     os.system(cmd)
 
                 # 更新数据库

@@ -68,7 +68,7 @@ def __gen_executive_file(solution, project):
         FileUtils.mkdir(project['output'])
 
     # 编译命令
-    cmd = f"{__gen_compiler_tags(solution)} {__gen_links(solution, project)} {obj_files} -o {final_path}"
+    cmd = f"{__gen_compiler_tags(solution)} {obj_files} {__gen_links(solution, project)} -o {final_path}"
 
     # 执行命令
     print("exec:", f"generating executive file to {project['output']}...")
