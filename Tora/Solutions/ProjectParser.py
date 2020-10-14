@@ -22,8 +22,6 @@ class XMLDefinedProject(BasicXMLDefined):
     def __init__(self, project: untangle.Element):
         super().__init__(project)
 
-        print("Hi there")
-
         if len(self.includes) > 0:
             self.includes = "-I".join(self.includes)
 

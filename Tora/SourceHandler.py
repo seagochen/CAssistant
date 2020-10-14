@@ -11,6 +11,8 @@ from Tora.Components.ToraDB import ToraDatabase
 from Tora.Components.ToraDB import TORA_TEMP
 from Tora.Components import ObjectFilesMan
 
+from siki.basics import Exceptions
+
 
 def __gen_links_and_headers(solution, project):
     links_and_headers = []
@@ -71,7 +73,7 @@ def compiling_sources(xml_file: str):
         # 编译文件
         src_files = __load_src_files(project)
         if len(src_files) <= 0:  # 空文件夹，跳过
-            print(f"{project['name']} has no source files, skipped")
+            raise Exceptions.EmptyCollectionElementException(f"{project['name']} has no source files, skipped")
 
         else:  # 有源文件，编译
             for file in __load_src_files(project):
