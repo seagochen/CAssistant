@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Author: Orlando Chen
 # Created: Jul 28, 2020
-# Modified: Jul 28, 2020
+# Modified: Feb 10, 2021
 
 import os
 
@@ -76,15 +76,19 @@ def compiling_sources(xml_file: str):
             raise Exceptions.EmptyCollectionElementException(f"{project['name']} has no source files, skipped")
 
         else:  # 有源文件，编译
-            for file in __load_src_files(project):
+            for src_file in __load_src_files(project):
 
                 # 检查文件信息，如果文件已经更新或第一次发现，文件进行编译
-                if database.update_file_info(project['name'], file):
+                if database.update_file_info(project['name'], src_file):
 
                     # 生成编译命令
-                    cmd = f"{compiler_tags} {headers_links} {file} -c -o " \
+                    cmd = f"{compiler_tags} {headers_links} {src_file} -c -o " \
                           f"{ObjectFilesMan.generate_object_file(project['name'], file, TORA_TEMP)}"
-                    # print("exec:", cmd)
+                    
+                    # print debug message
+                    # print(cmd)
+                    print("exec:", f"generating object file from {src_file}...")
+                    
                     os.system(cmd)
 
                 # 更新数据库

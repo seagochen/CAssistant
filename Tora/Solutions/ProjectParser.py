@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Author: Orlando Chen
 # Created: Jul 28, 2020
-# Modified: Jul 28, 2020
+# Modified: Feb 10, 2021
 
 import untangle
 from siki.basics import FileUtils, Exceptions
@@ -10,9 +10,11 @@ from Tora.Solutions.BasicProjectParser import BasicProjectDefined
 
 
 def convert_libraries_link_info(key, val):
+    if key == "default":
+        return " ".join(val)
+
     if val is not None and len(val) > 0:
         return "-L" + key + " " + " ".join(val)
-        # return clause
 
     return None
 

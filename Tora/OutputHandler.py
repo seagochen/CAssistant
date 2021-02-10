@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Author: Orlando Chen
 # Created: Jul 28, 2020
-# Modified: Jul 28, 2020
+# Modified: Feb 10, 2021
 
 from Tora.Components.ToraDB import TORA_TEMP
 from Tora.Solutions.XMLDefinedSolution import XMLDefinedSolution
@@ -69,6 +69,9 @@ def __gen_executive_file(solution, project):
 
     # 编译命令
     cmd = f"{__gen_compiler_tags(solution)} {obj_files} {__gen_links(solution, project)} -o {final_path}"
+    
+    # print debug message
+    # print(cmd)
 
     # 执行命令
     print("exec:", f"generating executive file to {project['output']}...")
@@ -90,6 +93,9 @@ def __gen_static_file(project):
 
     # 编译命令
     cmd = f"ar -rcs {final_path} {obj_files}"
+    
+    # print debug message
+    # print(cmd)
 
     # 执行命令
     print("exec:", f"generating static file to {project['output']}...")
@@ -110,6 +116,9 @@ def __gen_shared_file(solution, project):
 
     # 编译命令
     cmd = f"{__gen_compiler_tags(solution)} -shared -fPIC {__gen_links(solution, project)} {obj_files} -o {final_path}"
+
+    # print debug message
+    # print(cmd)
 
     # 执行命令
     print("exec:", f"generating shared file to {project['output']}...")
