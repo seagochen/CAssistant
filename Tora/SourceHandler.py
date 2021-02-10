@@ -83,12 +83,13 @@ def compiling_sources(xml_file: str):
 
                     # 生成编译命令
                     cmd = f"{compiler_tags} {headers_links} {src_file} -c -o " \
-                          f"{ObjectFilesMan.generate_object_file(project['name'], file, TORA_TEMP)}"
+                          f"{ObjectFilesMan.generate_object_file(project['name'], src_file, TORA_TEMP)}"
                     
                     # print debug message
                     # print(cmd)
                     print("exec:", f"generating object file from {src_file}...")
-                    
+
+                    # cmd exe
                     os.system(cmd)
 
                 # 更新数据库
