@@ -6,7 +6,7 @@
 
 import untangle
 from siki.basics import FileUtils, Exceptions
-from siki.dstruct import DictExtern
+from siki.dstruct import ListExtern
 
 
 def link_header(includes: untangle.Element):
@@ -60,6 +60,25 @@ def link_custom_libs(library_path: untangle.Element):
     return custom_lib
 
 
+def union(set_a: dict, set_b: dict):
+    """
+    union of two dictionaries with basic data type
+    """
+    set_c = {}
+
+    for _key, _value in set_a.items():
+        set_c[_key] = _value
+
+    for _key, _value in set_b.items():
+        if _key in set_c.keys():
+            _list = ListExtern.union(_value, set_c[_key])
+            set_c[_key] = _list
+        else:
+            set_c[_key] = _value
+
+    return set_c
+
+
 def link_libraries(libraries: untangle.Element):
     libraries_link = {}
 
@@ -68,11 +87,13 @@ def link_libraries(libraries: untangle.Element):
         # 对传入的库文件地址进行检测，如果不是文件夹，放弃
         if library_path.get_attribute("path") is not None and not FileUtils.isdir(library_path["path"]):
 
-            # if the given path is a related path, try again
+            # 如果给定的地址时相对地址，那么重新生成绝对地址后，再次尝试
             new_path = FileUtils.gen_folder_path(FileUtils.pwd(), library_path["path"])
             if FileUtils.isdir(new_path):
                 library_path["path"] = new_path
-            else:  # failed
+
+            # 解析失败，放弃
+            else:
                 continue
 
         # 用户使用了默认的系统库，通常搜寻的默认地址是/usr/lib
@@ -82,14 +103,19 @@ def link_libraries(libraries: untangle.Element):
             for item in library_path.item:
                 libraries.append(item.cdata)
 
-            # finally
-            libraries_link["default"] = libraries
-            continue  # to next clause
+            # 如果之前已经解析，那么就对数据进行增量操作
+            if "default" in libraries_link.keys():
+                libraries_link = union(libraries_link, {"default": libraries})
+            else:
+                libraries_link["default"] = libraries
+
+            # 解析结束，进入下一步
+            continue
 
         # 自定义库地址，或者第三方地址
         custom_libs = link_custom_libs(library_path)
         if len(custom_libs) > 0:
-            libraries_link = DictExtern.union(libraries_link, custom_libs)
+            libraries_link = union(libraries_link, custom_libs)
 
     return libraries_link
 
