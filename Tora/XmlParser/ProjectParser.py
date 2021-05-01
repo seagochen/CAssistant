@@ -6,6 +6,7 @@ from siki.basics import FileUtils
 
 from Tora.XmlParser import LibrariesLinker
 
+
 class ProjectParser(object):
 
     def __parse_src(self, project):
