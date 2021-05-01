@@ -20,22 +20,3 @@ def discard_nil(tablet, adopt_func=None, discard_func=None):
 
         else:
             pass
-
-
-def discard_empty(trunk, adopt_func=None, discard_func=None):
-    if trunk is None or len(trunk) <= 0:
-        if discard_func is not None:
-            discard_func(trunk)
-
-        else:
-            pass
-
-    else:
-        if adopt_func is not None:
-            adopt_func(trunk)
-
-        elif discard_func is not None:
-            discard_func(trunk)
-
-        else:
-            pass

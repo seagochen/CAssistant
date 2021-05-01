@@ -9,7 +9,7 @@ import pkgconfig
 from Tora import Utilities
 
 
-class PKGConfigs(object):
+class PKGParser(object):
 
     def __init__(self, name):
         self.headers = None
