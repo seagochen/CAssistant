@@ -111,6 +111,11 @@ venv.bak/
 dmypy.json
 .idea/
 .tora/
-.tora/
 bin/
 *DS_Store
+
+# c/c++ sources
+include/
+src/
+test/
+solution.xml

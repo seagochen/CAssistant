@@ -2,100 +2,58 @@
 # -*- coding: utf-8 -*-
 
 import untangle
-import os
+import platform
 
 from siki.basics import FileUtils
 from siki.dstruct import DictExtern
+from siki.basics import Exceptions
 
 
-def preprocess_libraries(lib: str):
-    root, leaf = FileUtils.root_leaf(lib)
+def search_custom_libs(library: untangle.Element):
+    path = library.get_attribute("path")
 
-    if os.name == "Linux":
-        if leaf[0:3] == "lib":
-            if leaf[-3:] == ".so":
-                return f"-l{leaf[3:-3]}"
-            if leaf[-2:] == ".a":
-                return f"-l{leaf[3:-2]}"
-    elif os.name == "Darwin":
-        if leaf[0:3] == "lib":
-            if leaf[-6:] == ".dylib":
-                return f"-l{leaf[3:-6]}"
-            if leaf[-3:] == ".so":
-                return f"-l{leaf[3:-3]}"
-    return lib
+    if FileUtils.isdir(path):
+        if platform.system() == "Linux":
+            return FileUtils.search_files(path, r"[\.a|\.so]$")
+
+        elif platform.system() == "Darwin":
+            return FileUtils.search_files(path, r"[\.dylib|\.so]$")
+
+    else:
+        raise Exceptions.InvalidParamException(f"not available path: {path} for "
+                                               f"searching libraries")
 
 
-def link_custom_libs(library_path: untangle.Element):
-    """
-    link system default libraries
-    """
-    custom_lib = {}
+def search_specified_libs(library: untangle.Element):
+    defaults = []
 
-    # customized library or third-party library
-    if hasattr(library_path, "item"):  # with specified the files
-        libraries = []
-        for item in library_path.item:
-            libraries.append(item.cdata)
+    for item in library.item:
+        defaults.append(item.cdata)
 
-        # finally
-        custom_lib[library_path['path']] = libraries
-
-    else:  # with only a path, search and links all libraries as possible
-        libraries = []
-
-        if os.name == "Linux":
-            for lib in FileUtils.search_files(library_path['path'], r"[\.a|\.so]$"):
-                libraries.append(lib)
-        elif os.name == "Darwin":
-            for lib in FileUtils.search_files(library_path['path'], r"[\.dylibgit ]$"):
-                libraries.append(lib)
-
-#        for lib in FileUtils.search_files(library_path['path'], r"[\.a|\.so]$"):
-#           libraries.append(preprocess_libraries(lib))
-
-        # finally
-        custom_lib[library_path['path']] = libraries
-
-    return custom_lib
+    return defaults
 
 
 def link(libraries: untangle.Element):
-    libraries_link = {}
+    # library link
+    library_link = {}
 
-    for library_path in libraries:
+    for library in libraries:
+        # third part library
+        if library.get_attribute("path") is not None:
 
-        # 对传入的库文件地址进行检测，如果不是文件夹，放弃
-        if library_path.get_attribute("path") is not None and not FileUtils.isdir(library_path["path"]):
+            key_name = library.get_attribute("path")
 
-            # 如果给定的地址时相对地址，那么重新生成绝对地址后，再次尝试
-            new_path = FileUtils.gen_folder_path(FileUtils.pwd(), library_path["path"])
-            if FileUtils.isdir(new_path):
-                library_path["path"] = new_path
-
-            # 解析失败，放弃
+            if hasattr(library, 'item'):
+                items = search_specified_libs(library)
+                library_link = DictExtern.union(
+                    library_link, {key_name: items})
             else:
-                continue
+                items = search_custom_libs(library)
+                library_link = DictExtern.union(
+                    library_link, {key_name: items})
 
-        # 用户使用了默认的系统库，通常搜寻的默认地址是/usr/lib
-        if library_path.get_attribute("path") is None:
-            libraries = []
+        else:  # default
+            items = search_specified_libs(library)
+            library_link = DictExtern.union(library_link, {"default": items})
 
-            for item in library_path.item:
-                libraries.append(item.cdata)
-
-            # 如果之前已经解析，那么就对数据进行增量操作
-            if "default" in libraries_link.keys():
-                libraries_link = DictExtern.union(libraries_link, {"default": libraries})
-            else:
-                libraries_link["default"] = libraries
-
-            # 解析结束，进入下一步
-            continue
-
-        # 自定义库地址，或者第三方地址
-        custom_libs = link_custom_libs(library_path)
-        if len(custom_libs) > 0:
-            libraries_link = DictExtern.union(libraries_link, custom_libs)
-
-    return libraries_link
+    return library_link
