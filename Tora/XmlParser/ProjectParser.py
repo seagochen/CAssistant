@@ -82,7 +82,7 @@ class ProjectParser(object):
         return None
 
     def __str__(self):
-        strings = [f"Name: '{self.name}' type: '{self.type}' output dir: '{self.output}'",
+        strings = [f"Name: '{self.name}'\ntype: '{self.type}'\noutput dir: '{self.output}'",
                    f"with sources: {self.src_files}"]
 
         if hasattr(self, 'includes'):

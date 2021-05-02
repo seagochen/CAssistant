@@ -44,8 +44,15 @@ def link_custom_libs(library_path: untangle.Element):
     else:  # with only a path, search and links all libraries as possible
         libraries = []
 
-        for lib in FileUtils.search_files(library_path['path'], r"[\.a|\.so]$"):
-            libraries.append(preprocess_libraries(lib))
+        if os.name == "Linux":
+            for lib in FileUtils.search_files(library_path['path'], r"[\.a|\.so]$"):
+                libraries.append(lib)
+        elif os.name == "Darwin":
+            for lib in FileUtils.search_files(library_path['path'], r"[\.dylibgit ]$"):
+                libraries.append(lib)
+
+#        for lib in FileUtils.search_files(library_path['path'], r"[\.a|\.so]$"):
+#           libraries.append(preprocess_libraries(lib))
 
         # finally
         custom_lib[library_path['path']] = libraries
