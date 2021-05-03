@@ -1,5 +1,5 @@
-from Tora.XmlParser.SolutionParser import SolutionParser
+# from Tora.XmlParser.SolutionParser import SolutionParser
+from Tora.Compiler.GCC import GCC
 
-
-solution = SolutionParser("./solution.xml")
-print(str(solution))
+compiler = GCC("./solution.xml")
+compiler.gen_objects()
