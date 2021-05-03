@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import untangle
-from Tora.XmlParser.PKGParser import PKGParser as pkg
+from Tora.XmlParser.PKGParser import PKGParser
 
 
 class CompilerParser(object):
@@ -81,7 +81,7 @@ class CompilerParser(object):
         for token in xml.config.requirements.pkgs.item:
 
             # 確認して解決する
-            config = pkg(token.cdata)
+            config = PKGParser(token.cdata)
             if config.is_valid():
                 pkg_configs.append(config)
 

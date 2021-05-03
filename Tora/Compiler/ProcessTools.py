@@ -6,6 +6,7 @@ from Tora.XmlParser.SolutionParser import SolutionParser
 from Tora.Components.ToraDatabase import TORA_TEMP
 from siki.basics import Exceptions
 from siki.basics import FileUtils
+from siki.dstruct import ListExtern
 
 import platform
 
@@ -44,6 +45,33 @@ def compiler_pkg_configs(solution: SolutionParser):
 
     if solution.compiler['pkg_configs'] is not None:
         return [str(i) for i in solution.compiler['pkg_configs']]
+
+    else:
+        return None
+
+
+def compiler_pkg_headers(solution: SolutionParser):
+
+    files = []
+
+    if solution.compiler['pkg_configs'] is not None:
+        for pkg in solution.compiler['pkg_configs']:
+            files.extend(pkg.headers)
+
+        return files
+
+    else:
+        return None
+
+
+def compiler_pkg_libraries(solution: SolutionParser):
+    files = []
+
+    if solution.compiler['pkg_configs'] is not None:
+        for pkg in solution.compiler['pkg_configs']:
+            files.extend(pkg.libs)
+
+        return files
 
     else:
         return None
@@ -89,6 +117,7 @@ def search_object_files(project: ProjectParser, temp=TORA_TEMP):
 def generate_static_file(solution: SolutionParser, project: ProjectParser):
     compiler = compiler_name(solution)
     libraries = project_libraries(project)
+    pkg = compiler_pkg_libraries(solution)
 
     objects = search_object_files(project)
     objects = " ".join(objects)
@@ -101,12 +130,14 @@ def generate_static_file(solution: SolutionParser, project: ProjectParser):
     if platform.system() == "Darwin":
         final_path = FileUtils.gen_file_path(project['output'],
                                              f"lib{project['name']}.dylib")
-        return [compiler, objects, libraries, "-dynamiclib -o", final_path]
+        return [compiler, objects, libraries, pkg,
+                "-dynamiclib -o", final_path]
 
     elif platform.system() == "Linux":
         final_path = FileUtils.gen_file_path(project['output'],
                                              f"lib{project['name']}.a")
-        return ["ar", objects, libraries, "-rcs", final_path]
+        return ["ar", objects, libraries, pkg,
+                "-rcs", final_path]
 
     else:
         raise Exceptions.NoAvailableResourcesFoundException(
@@ -120,7 +151,7 @@ def generate_dynamic_file(solution: SolutionParser, project: ProjectParser):
     objects = " ".join(objects)
 
     compiler = compiler_name(solution)
-    pkg = compiler_pkg_configs(solution)
+    pkg = compiler_pkg_libraries(solution)
     flags = compiler_flags(solution)
     macros = compiler_macros(solution)
 
@@ -133,7 +164,8 @@ def generate_dynamic_file(solution: SolutionParser, project: ProjectParser):
         FileUtils.mkdir(project["output"])
 
     # finally
-    return [compiler, pkg, flags, macros, libraries, objects, "-shared -fPIC", final_path]
+    return [compiler, pkg, flags, macros, libraries,
+            objects, "-shared -fPIC", final_path]
 
 
 def generate_executive_file(solution: SolutionParser, project: ProjectParser):
@@ -142,7 +174,7 @@ def generate_executive_file(solution: SolutionParser, project: ProjectParser):
     objects = " ".join(objects)
 
     compiler = compiler_name(solution)
-    pkg = compiler_pkg_configs(solution)
+    pkg = compiler_pkg_libraries(solution)
     flags = compiler_flags(solution)
     macros = compiler_macros(solution)
 

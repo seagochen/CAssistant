@@ -2,17 +2,13 @@
 # -*- coding: utf-8 -*-
 
 
-from Tora.Compiler import ProcessTools as tools
-from Tora.XmlParser.SolutionParser import SolutionParser
-from Tora.Components.ToraDatabase import ToraDatabase
-from Tora.Components.ObjectFile import generate
-from siki.basics import FileUtils
-from siki.basics import Exceptions
-
-from Tora.Components.ToraDatabase import TORA_TEMP
-
 import os
-import platform
+
+from Tora.Compiler import ProcessTools as tools
+from Tora.Components.ObjectFile import generate
+from Tora.Components.ToraDatabase import TORA_TEMP
+from Tora.Components.ToraDatabase import ToraDatabase
+from Tora.XmlParser.SolutionParser import SolutionParser
 
 
 class GCC(object):
@@ -23,7 +19,7 @@ class GCC(object):
 
     def gen_objects(self):
         compiler = tools.compiler_name(self.solution)
-        pkg = tools.compiler_pkg_configs(self.solution)
+        pkg = tools.compiler_pkg_headers(self.solution)
         flags = tools.compiler_flags(self.solution)
         macros = tools.compiler_macros(self.solution)
 
