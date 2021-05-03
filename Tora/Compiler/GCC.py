@@ -6,10 +6,13 @@ from Tora.Compiler import ProcessTools as tools
 from Tora.XmlParser.SolutionParser import SolutionParser
 from Tora.Components.ToraDatabase import ToraDatabase
 from Tora.Components.ObjectFile import generate
+from siki.basics import FileUtils
+from siki.basics import Exceptions
 
 from Tora.Components.ToraDatabase import TORA_TEMP
 
 import os
+import platform
 
 
 class GCC(object):
@@ -51,3 +54,31 @@ class GCC(object):
 
                 # update database
                 self.database.save_and_close()
+
+    def gen_final(self):
+
+        for project in self.solution:
+
+            # if static file
+            if project["type"] == "static":
+                cmd = tools.generate_static_file(self.solution, project)
+
+            elif project["type"] == "dynamic":
+                cmd = tools.generate_dynamic_file(self.solution, project)
+
+            elif project["type"] == "exe":
+                cmd = tools.generate_executive_file(self.solution, project)
+
+            else:  # skip invalid conditions
+                continue
+
+            # remove null from list
+            while None in cmd:
+                cmd.remove(None)
+
+            # print debug message
+            cmd = " ".join(cmd)
+            print(f"exec: {cmd}")
+
+            # run compiling command
+            os.system(cmd)
